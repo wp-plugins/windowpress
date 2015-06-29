@@ -1,0 +1,324 @@
+
+/*wordpress media queries
+normal - media all
+autofold - @media only screen and (max-width: 960px)
+hide/show - @media screen and (max-width: 782px)
+*/
+
+/*window*/
+#windowpress-windows .windowpress-window {
+	width: auto !important;
+	height:100% !important;
+	border: none;
+	position:fixed;
+	right:0px !important;
+	bottom:0;
+	background:white;
+}
+
+@media screen and (min-width:783px) {
+	#windowpress-windows .windowpress-window { top:32px !important; }
+	#windowpress-windows .windowpress-window-noslide-nofolded { left: 160px !important; }
+	#windowpress-windows .windowpress-window-noslide-folded { left: 36px !important; }
+	#windowpress-windows .windowpress-window-slide-nofolded { left: 5px !important; }
+	#windowpress-windows .windowpress-window-slide-folded { left: 5px !important; }
+}
+
+
+@media screen and (max-width:782px) { 
+	#windowpress-windows .windowpress-window { 
+		left:0px; 
+		top:46px !important;
+	}
+}
+
+
+#windowpress-windows .windowpress-window > div.iframe_wrapper {
+	height:100%;
+	width:100%;
+	margin:0;
+	padding:0;
+}
+
+#windowpress-windows iframe {
+	width:100%;
+	margin:0;
+	padding:0;
+	height:100%;
+
+}
+
+/*window buttons*/
+#windowpress-windows button, #windowpress-windows a {
+	height:28px;
+	width:28px;
+	position:relative;
+	top:0px;
+	border:none;
+	outline: 0;
+	padding:0;
+	margin: 3px 0px 8px 10px;
+	background:rgba(0,0,0,0.0);
+	display:block;
+	float:left;
+	cursor:default;
+}
+#windowpress-windows svg, #windowpress-maximized_tops svg, #windowpress-windowlist_toggle svg, #windowpress-taskbar svg { width:100%; height:100%; }
+
+
+
+
+/*taskbar*/
+/********************************************************************************************************************************/
+#wp-admin-bar-root-default { width:auto; float:left; }
+
+#wp-admin-bar-top-secondary {
+  width:auto;
+  overflow:hidden;
+  float:none !important;
+  text-align:left;
+}
+
+#wp-admin-bar-windowpress { float:none !important; }
+
+#windowpress-taskbar {
+	/*overflow:hidden;*/
+	height:32px;
+	list-style: none;
+	
+	float:left;
+}
+
+@media screen and (min-width:783px) { #windowpress-taskbar { display:inline !important; } }
+
+#windowpress-taskbar button.close { display:none; }
+
+#windowpress-taskbar li.taskbar {
+	padding:0;
+	margin 0;
+	overflow:hidden;
+	height:32px;
+}
+
+#windowpress-taskbar button.taskbar { 
+	color:white;
+	outline:0;
+	padding:0 0px 0 5px;
+	box-sizing: border-box;
+	margin:0;
+	border-top:0;
+	border-bottom:0;
+	border-right:0;
+	border-left-width:2px;
+	border-left-style:solid;
+	background:rgba(0,0,0,0.0);
+	width:100%;
+	height:100%;
+	overflow:hidden;
+	text-align:left;
+}
+
+#windowpress-windowlist_toggle  {  display:none; }
+
+#windowpress-maximized_tops { float:right; }
+
+#windowpress-maximized_tops .window_buttons_left { float:right; }
+
+#windowpress-maximized_tops .window_buttons_right { float:right; }
+
+#windowpress-maximized_tops .window_title {
+	text-align:center;
+	overflow:hidden;
+	height:32px;
+	float:right;
+	overflow:hidden;
+	padding: 0 0px 0 0px;
+	cursor:default;
+}
+
+#windowpress-maximized_tops .window_title > p {
+	width:100%;
+	padding: 0 0px 0 0px;
+}
+
+#windowpress-maximized_tops .window_buttons { float:left; }
+
+#windowpress-maximized_tops button, #windowpress-maximized_tops .window_buttons_left a {
+	height:28px;
+	width:28px;
+	position:relative;
+	top:0px;
+	border:none;
+	outline: 0;
+	padding:0;
+	margin: 3px 10px 8px 0px;
+	background:rgba(0,0,0,0.0);
+	display:block;
+	float:left;
+	cursor:default;
+}
+
+#windowpress-maximized_tops .window_buttons_right button { margin: 3px 0px 8px 10px; }
+
+
+/*mobile taskbar*/
+@media screen and (max-width:782px) {
+
+	#wp-admin-bar-windowpress { display: block !important;  }
+	
+	#wp-admin-bar-windowpress > div { text-align:right; }
+
+	#windowpress-taskbar {
+		position:fixed !important;
+		top:46px !important;
+		right:0 !important;
+		height:auto;
+		z-index:999999999 !important;
+		min-height:400px;
+		width:190px;
+		height:48px;
+
+	}
+	
+	#windowpress-taskbar  li.taskbar {display:block; width:100% !important; height:46px; }
+	
+	#windowpress-taskbar button.close { 
+		display:block;
+		width: 36px;
+		height:36px;
+		padding:6px 0;
+		border:none;
+		outline: 0;
+		background:rgba(0,0,0,0.0);
+		float:right;
+	}
+
+	#windowpress-taskbar  button.taskbar { 
+		box-sizing: border-box;
+		display:block; 
+		width:154px;
+		height:100%;
+		text-align:left;
+		font-size:16px !important;
+		padding:8px 3px;
+		float:left;
+		border:0;
+	}
+	
+	
+	#windowpress-maximized_tops .window_buttons_right { display:none; }
+	
+	#windowpress-maximized_tops .window_title { display:none; }
+	
+	#windowpress-maximized_tops { float:right; }
+	
+	#windowpress-windowlist_toggle {
+		float:right;
+		display:block;
+	}
+	
+	#windowpress-windowlist_toggle path { fill:white; }
+	
+	#windowpress-maximized_tops button, #windowpress-windowlist_toggle button, #windowpress-maximized_tops .window_buttons_left a {
+		height:40px;
+		width:40px;
+		position:static;
+		border:none;
+		outline: 0;
+		padding:0;
+		margin: 3px 5px 3px 0px;
+		background:rgba(0,0,0,0.0);
+		display:block;
+		float:left;
+		cursor:default;
+	}
+
+	#wpadminbar #wp-admin-bar-my-account { float: left; }
+	
+	
+}
+
+@media screen and (max-width: 1000px) { #wpadminbar #windowpress-maximized_tops .window_title { display:none; } }
+@media screen and (max-width: 600px) { #wpadminbar li#wp-admin-bar-comments { display:none; } }
+@media screen and (max-width: 381px) { #wpadminbar #windowpress-maximized_tops .button_refresh-autohide { display:none; } }
+@media screen and (max-width: 336px) { #wpadminbar li#wp-admin-bar-new-content { display:none; } }
+
+
+
+
+
+/********************************************************************************************************************************/
+
+/*menuslide button*/
+#windowpress-menuslide_toggle svg {
+	width:100%;
+	height:100%;
+	position:relative;
+	top:-7px;
+}
+#windowpress-menuslide_toggle { 
+	line-height: 34px;
+	clear:both;
+}
+#windowpress-menuslide_toggle > div {
+	height:15px;
+	width:15px;
+	margin: 10px 8px 10px 11px;
+	float:left;
+	line-height: 34px;
+}
+@media screen and (max-width:782px) { #windowpress-menuslide_toggle { display:none; } }
+
+
+
+/*wordpress tweaks*/
+
+body #wpwrap { background: none !important; }
+
+
+body #wpwrap #wpfooter { display:none; }
+
+body #wpwrap #wpcontent {
+	margin-left:0px;
+	padding-left:0px;
+}
+
+body #wpwrap #wpbody-content { display:none; }
+
+
+body #wpwrap #wpadminbar { z-index: 999999999 !important; }
+
+@media screen and (max-width:782px) {
+	body #wpwrap #wpadminbar { 
+		position:fixed; 
+		top:0; 
+	}
+}
+
+body #wpwrap #adminmenuback { 
+	z-index: 99999999 !important; 
+}
+
+body #wpwrap #adminmenuwrap { 
+	z-index: 99999999 !important;
+}
+
+body #wpwrap #adminmenuback.windowpress-menu-slide {
+	/*z-index: 99999999; */
+	left:-155px;
+}
+
+body #wpwrap #adminmenuwrap.windowpress-menu-slide {
+	/*z-index: 99999999 !important;*/
+	left:-160px;
+	padding-right:5px;
+}
+
+body.folded #wpwrap #adminmenuwrap.windowpress-menu-slide {
+	left:-36px;
+	padding-right:5px;
+}
+
+body.folded #wpwrap #adminmenuback.windowpress-menu-slide {
+	left:-31px;
+}

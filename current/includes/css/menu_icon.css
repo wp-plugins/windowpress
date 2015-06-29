@@ -1,0 +1,25 @@
+@font-face {
+	font-family: 'windowpress_menu_icon';
+	src:url('../assets/fonts/menu_icon.eot?-nh150o');
+	src:url('../assets/fonts/menu_icon.eot?#iefix-nh150o') format('embedded-opentype'),
+	url('../assets/fonts/menu_icon.ttf?-nh150o') format('truetype'),
+	url('../assets/fonts/menu_icon.woff?-nh150o') format('woff'),
+	url('../assets/fonts/menu_icon.svg?-nh150o#icomoon') format('svg');
+	font-weight: normal;
+	font-style: normal;
+}
+		
+
+#adminmenu #toplevel_page_windowpress .menu-icon-generic div.wp-menu-image:before,
+ #adminmenu #toplevel_page_windowpress-settings .menu-icon-generic div.wp-menu-image:before {
+	font-family: windowpress_menu_icon !important;
+	content: '\e600';
+	font-size: 1.3em !important;
+}
+
+#wpadminbar #wp-admin-bar-windowpress .ab-icon:before {
+	font-family: windowpress_menu_icon !important;
+	content: '\e600';
+	font-size: 1em !important;
+
+}
