@@ -8,7 +8,7 @@ Stable tag: 1.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Multitasking made easy. WindowPress allows you to open multiple WordPress pages in your administration area, limiting all administration tasks to just one browser tab.
+Multitasking made easy. WindowPress allows you to open multiple pages in your backend, limiting all administration tasks to just one browser tab.
 
 == Description ==
 
