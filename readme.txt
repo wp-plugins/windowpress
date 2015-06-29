@@ -35,7 +35,7 @@ Mobile support is more like an addition, than a core feature and there may be so
 
 == Installation ==
 
-1. Upload `windowpress` to the `/wp-content/plugins/` directory
+1. Upload `windowpress` to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
 1. Now you can access WindowPress from admin menu and adminbar.
 1. You can adjust settings in WindowPress -> Settings .
