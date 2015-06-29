@@ -49,7 +49,7 @@ Simply hold a click on a link (or touch a link if it's a touch device) until a n
 
 == Screenshots ==
 
-1. Frontend page and sliding admin menu.
+1. Frontend page and sliding admin menu
 2. Easily switch between opened windows. You can open as many windows as you want.
 3. Full width admin pages
 4. WindowPress on a smartphone
