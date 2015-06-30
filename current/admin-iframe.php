@@ -9,9 +9,7 @@
 * @author Maciej Krawczyk
 */
 
-
 defined('ABSPATH') or die();
-
 
 class WindowPress_Admin_Iframe {
 
@@ -21,24 +19,31 @@ class WindowPress_Admin_Iframe {
 		$this->plugin_url=plugins_url().'/'.basename(dirname(dirname(__FILE__))).'/'.basename(dirname(__FILE__));
 		$this->file=$file=basename($_SERVER["PHP_SELF"]);
 		
-		//hide admin menu and adminbar
-		add_action('admin_head',array($this,'hide_admin_menu') );
-
-		//page title for iframes
+		
+		#page title for iframes
 		add_filter( 'admin_title', array($this,'get_reduced_title'), 10, 2 );
 		add_action('admin_head',array($this,'output_reduced_title') );
 		add_action('customize_controls_print_scripts', array($this,'output_customizer_meta'));
 
-		//iframe check
+		#iframe check
 		add_action('admin_head',array($this,'iframe_check') );
 		add_action('customize_controls_print_scripts',array($this,'iframe_check') );
 
-
-		//fixes
+		#fixes
 		add_action( 'customize_controls_enqueue_scripts', array($this, 'customizer_fix') );
 		//if WordPress advanced editor
 		if($file==='post.php' || $file==='post-new.php')
 			add_action( 'admin_enqueue_scripts', array($this, 'editor_fix') );
+			
+			
+		#hide admin menu and adminbar
+		add_action('admin_head',array($this,'hide_admin_menu') );	
+		//dequeue admin bar script and style, as it's not needed
+		add_action( 'admin_enqueue_scripts', array($this,'dequeue_unused_scripts') );
+		//remove unused menu contents
+		add_action( 'wp_before_admin_bar_render', array($this,'remove_adminbar_menus') ); 
+		add_action( 'admin_menu', array($this,'remove_adminmenu_menus') ); 
+
 
     }
     
@@ -76,6 +81,7 @@ class WindowPress_Admin_Iframe {
 		wp_enqueue_script( 'windowpress_editor_fix', $this->plugin_url.'/includes/js/editor_fix.js', array('jquery'), false, true );
 	}
 
+
 	function output_customizer_meta() {
 		?><meta name="reduced_title" content="Customizer" /><meta name="windowpress_iframe" content="true" /><?php
 	}
@@ -97,28 +103,42 @@ class WindowPress_Admin_Iframe {
 		echo '<meta name="windowpress_iframe" content="true" />';
 
 	}
+	
+	public function dequeue_unused_scripts() {
+		wp_dequeue_script('admin-bar');
+		wp_dequeue_style('admin-bar');
+
+	}
+
+	function remove_adminmenu_menus() {
+		global $menu;
+		$menu=array(0=>0);
+	}
+
+	function remove_adminbar_menus() {
+		global $wp_admin_bar;
+		$view=$wp_admin_bar->get_node('view'); //view link is needed, it's imported to the parent window
+		$menus=$wp_admin_bar->get_nodes();
+		foreach ($menus as $menu) { $wp_admin_bar->remove_menu($menu->id); } 
+		$wp_admin_bar->add_node($view);
+	}
 
 	public function hide_admin_menu() {
 		?><style>
-			#adminmenuback { display: none; }
-			#adminmenuwrap { display:none; }
-			#wpcontent { margin-left:10px; }
-			#wpadminbar { display:none; }
-			#wpbody { padding-top:0px; }
+			body #wpwrap #adminmenuback { display: none !important; }
+			body #wpwrap #adminmenuwrap { display:none !important; }
+			body #wpwrap #wpcontent { margin-left:0px; }
+			body #wpwrap #wpadminbar { display:none !important; }
+			body #wpwrap #wpbody { padding-top:0px; }
 			body { position:absolute; top:0px; left:0; right:0; }
 		</style><?php
 	}
-
-
+	
 	private $options;
 	private $dbtab;
 	private $file;
 
-
-
 	private $option_name='windowpress';
-
-
 
 }
 

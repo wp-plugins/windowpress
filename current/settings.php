@@ -37,6 +37,12 @@ class WindowPress_Settings {
 		#install hook
 		if (!$this->options) register_activation_hook( 'windowpress/index.php', array($this,'install'));
 		
+		#update actions
+		if (isset($this->options['version_number']) && WINDOWPRESS_VER!=$this->options['version_number']) {
+			$this->options['version_number']=WINDOWPRESS_VER;
+			update_option($this->option_name, $this->options);
+		}
+		
 		
 		//pages and settings
 		add_action( 'admin_init', array( $this, 'add_settings_fields' ) );
@@ -100,7 +106,7 @@ class WindowPress_Settings {
 				</div>
 
 				<div class="about-section">
-					<p>Spread the word!</p>
+					<p>You can easily help WindowPress grow by sharing it with your friends.</p>
 					<?php
 					echo "<a id='windowpress-fbshare' class='social-icon' href='http://www.facebook.com/sharer.php?u=$windowpress_url' title='Share on Facebook'><img src='".$this->plugin_url."/includes/assets/social-icons/facebook.png' /></a>";
 					echo "<a id='windowpress-plus1' class='social-icon' href='https://plus.google.com/share?url=$windowpress_url' title='Recommend on Google+'><img src='".$this->plugin_url."/includes/assets/social-icons/google-plus.png' /></a>";
@@ -117,7 +123,7 @@ class WindowPress_Settings {
 			<div class="about-row-2">
 
 				<div class="about-section">
-				<p>If you like this plugin and find it useful, help me to make it even better by making a donation.</p>
+				<p>I plan to keep WindowPress actively developed. If you like this plugin and find it useful, please consider donating.</p>
 				<a class="button button-blue mobile-button-noborder-right" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YVXX65YFACBFE" target="_blank">Donate</a>
 				</div>
 			

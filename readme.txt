@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, wordpress, backend, frontend
 Requires at least: 3.8
 Tested up to: 4.2.2
-Stable tag: 1.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -55,10 +55,19 @@ Simply hold a click on a link (or touch a link if it's a touch device) until a n
 4. WindowPress on a smartphone
 5. You can have a custom background image to display when no windows are opened or all windows are minimized.
 
+== Upgrade Notice ==
 
+= 1.0.1 =
+*design: corrected #wpcontent padding-left on admin pages
+*performance: removed unneeded content on admin pages
 
 == Changelog ==
 
-1.0
+= 1.0.1 =
+Released: June 30 2015
+*design: corrected padding on admin pages
+*performance: removed unneeded content on admin pages
+
+= 1.0 =
 Released: June 29 2015
 *Initial release 
