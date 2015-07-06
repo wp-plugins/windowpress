@@ -8,29 +8,28 @@ Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Multitasking made easy. WindowPress allows you to open multiple pages in your backend, limiting all administration tasks to just one browser tab.
+Multitasking made easy. WindowPress turns your wp-admin into a desktop-like environment.
 
 == Description ==
 
-Are your tired of switching back and forth between frontend and backend of your website? Or maybe you sometimes end up with too many browser tabs opened. If you are looking for a plugin to speed up your website managment tasks and improve your efficency, you've just found one.
+Are your tired of switching back and forth between frontend and backend of your website? Or maybe you sometimes end up with too many browser tabs opened. If you are looking for a plugin to speed up your website management tasks and improve your efficiency, you've come to the right place.
 
 [youtube https://www.youtube.com/watch?v=RyluYf_MnIY]
 
+= What's this plugin all about? =
+The main goal of WindowPress is to keep everything organized and enclose all administration tasks in just one browser tab. This plugin achieves this by turning wp-admin into a desktop-like environment, in which you can open new windows with your website's internal pages. So for example in one browser tab you can view your website, customize it, add new content, manage comments, change settings etc. Clicking an adminbar or adminmenu link changes the location of the active window, which feels just like the normal WordPress administration area, however when you hold a click on a link, you will open it in a new window. Then you can easily switch between opened windows in the adminbar taskbar. 
 
-= One tab, many windows =
-The main goal of WindowPress is to limit all administration tasks to just one browser tab. Forget about times when you had lots of WordPress tabs opened. Now you can have everything organized in the administration area of your website. Clicking a link in menu changes location of current window, just like in normal WordPress admin, but holding a click opens a new WindowPress window. You can easily switch between opened windows in the taskbar, which is located in adminbar. 
-
-= Backend on frontend? =
-Pages you can open inside WindowPress are not limited to admin pages. You might as well open your frontend page. Turn on admin menu sliding, and you have a full width frontend page with the ability to access all admin pages directly from the sliding menu.
+= Admin menu sliding =
+WindowPress adds a new feature to the admin menu (only for WindowPress admin area). You can hide admin menu and make it slide, so the pages in opened windows can be of full width. It can be easily turned on/off just like collapse menu feature.
 
 = Flexibility =
 WindowPress doesn't replace WordPress administration area. As you can see in the video, you can easily switch between WindowPress and traditional WordPress backend.
 
+= Mobile support =
+WindowPress works also on mobile devices, however please note that the mobile version may not work properly for you yet, as I only have one device to test it. If you find a bug please let me now in the support forum.
 
 = Notice =
 Make sure you always have the latest version of WindowPress before updating WordPress.
-
-Mobile support is more like an addition, than a core feature and there may be some bugs, as I only have one device to test it (and Chrome Developer Tools). If you find a bug, please report it in the support forum.
 
 
 == Installation ==
@@ -59,15 +58,19 @@ Simply hold a click on a link (or touch a link if it's a touch device) until a n
 
 = 1.0.1 =
 *design: corrected #wpcontent padding-left on admin pages
+
 *performance: removed unneeded content on admin pages
 
 == Changelog ==
 
 = 1.0.1 =
 Released: June 30 2015
+
 *design: corrected padding on admin pages
+
 *performance: removed unneeded content on admin pages
 
 = 1.0 =
 Released: June 29 2015
+
 *Initial release 
