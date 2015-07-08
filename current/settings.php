@@ -96,7 +96,7 @@ class WindowPress_Settings {
 			
 		<div id="windowpress-settings-about">
 						
-			<h2>WindowPress v1.0</h2>
+			<h2>WindowPress v<?php echo WINDOWPRESS_VER; ?></h2>
 			
 			<div class="about-row-1">
 

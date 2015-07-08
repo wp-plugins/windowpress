@@ -5,6 +5,16 @@ autofold - @media only screen and (max-width: 960px)
 hide/show - @media screen and (max-width: 782px)
 */
 
+
+/*make everything unselectable - we don't want to accidentaly cover wallpaper or other interface elements with selection*/
+* {
+   -ms-user-select: none; /* IE 10+ */
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   user-select: none;
+}
+
 /*window*/
 #windowpress-windows .windowpress-window {
 	width: auto !important;
@@ -175,7 +185,7 @@ hide/show - @media screen and (max-width: 782px)
 		height:auto;
 		z-index:999999999 !important;
 		min-height:400px;
-		width:190px;
+		width:190px !important;
 		height:48px;
 
 	}

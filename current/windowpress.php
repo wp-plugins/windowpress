@@ -65,7 +65,7 @@ class WindowPress {
 		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css' );
 		
 		//main script
-		wp_enqueue_script( $this->main_script, $this->plugin_url.'/includes/js/windowpress.js', array('jquery' ), false, true ); 
+		wp_enqueue_script( $this->main_script, $this->plugin_url.'/includes/js/windowpress.js', array('jquery','jquery-ui-sortable' ), false, true ); 
 
 
 
@@ -148,7 +148,7 @@ class WindowPress {
 			#windowpress-menuslide_toggle path { fill: $icon_colors[base]; }
 				
 				
-			#windowpress-taskbar { background: $colors[1] !important; }
+			@media screen and (max-width:782px) { #windowpress-taskbar { background: $colors[1] !important; } }
 			#windowpress-taskbar button.taskbar { 	border-left-color:$colors[1]; }
 			
 			#windowpress-taskbar li.taskbar path { fill: $tsk_btn_bg_active; }
