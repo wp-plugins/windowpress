@@ -38,6 +38,8 @@ var WINDOWPRESS = function () {
 	
 	var buttons_top_width=5*38; //in px
 	var taskbar_button_width=settings["taskbar_button_width"];
+	var taskbar_width;
+
 	
 	var object=this;
 	
@@ -78,8 +80,26 @@ var WINDOWPRESS = function () {
 		//remove return param from customizer links
 		$('#menu-appearance a.hide-if-no-customize').attr('href','customize.php');
 		
+		//this may return incorrect result as some external script changes root-default width on start
+		//that's why it's called one more time with a timeout
+		object.taskbarWidth();
+		
+		$('#windowpress-taskbar').sortable({
+			handle:"button.taskbar", 
+			cancel:"",
+			axis:"x",
+			zIndex:999999,
+			containment: "parent",
+			tolerance: "pointer",
+			revert:300
+		}); 
+		
 		
 		object.registerHooks();
+		
+		var initTimer=setTimeout(function() { //set a small timeout to get correct taskbar width
+			object.taskbarWidth();
+		},200);
 	
 		if(settings["homepage"]) object.windowCreateNew(settings["homepage_url"]);
 
@@ -94,19 +114,21 @@ var WINDOWPRESS = function () {
 //WINDOWS AND TASKBAR
 //********************************************************************************************************************
 
-
+	this.taskbarWidth = function() { //set correct taskbar width - called on init and on  window resize
+		var top_controls_width=buttons_top_width;
+		if ($(window).width()>1000) top_controls_width+=settings["window_title_width"];
+		taskbar_width=$('#wpadminbar').width()-$('#wp-admin-bar-root-default').width()-top_controls_width;
+		$('#windowpress-taskbar').css("width",taskbar_width+"px");	
+	}
+	
 	this.taskbarOverflowAgent = function() { //prevent taskbar overflow, runs when window count changes or screen width changes
 		
 		if (is_mobile || !windowCount) return; //this function has no purpose for mobile screens
+	
+		var taskbar_width_needed=settings["taskbar_button_width"]*windowCount;
 		
-		//compute widths
-		var top_controls_width=top_controls_width=buttons_top_width;
-		if ($(window).width()>1000) top_controls_width+=settings["window_title_width"];
-		var taskbar_width_max=$('#wpadminbar').width()-$('#wp-admin-bar-root-default').width()-top_controls_width;
-		var taskbar_width=settings["taskbar_button_width"]*windowCount;
-		
-		if (taskbar_width > taskbar_width_max) { //if overflow reached
-			taskbar_button_width=Math.floor(taskbar_width_max/windowCount); //divide widths equally
+		if (taskbar_width_needed > taskbar_width) { //if overflow reached
+			taskbar_button_width=Math.floor(taskbar_width/windowCount); //divide widths equally
 		}
 		else taskbar_button_width=settings["taskbar_button_width"]; //restore default value
 
@@ -347,7 +369,7 @@ var WINDOWPRESS = function () {
 
 		//create new taskbar element
 		var taskbarItemId=elementId+'t';
-		var taskbarItem='<li id="'+taskbarItemId+'" class="taskbar" style="width:'+taskbar_button_width+'px;"><button type="button" class="taskbar">'+locale_text["loading"]+'</button><button class="close">'+PHP.svgIcons["close2"]+'</button></li>';
+		var taskbarItem='<li id="'+taskbarItemId+'" class="taskbar" style="width:'+taskbar_button_width+'px;"><button type="button" class="taskbar ui-sortable-handle">'+locale_text["loading"]+'</button><button class="close">'+PHP.svgIcons["close2"]+'</button></li>';
 		$('#windowpress-taskbar').append(taskbarItem);
 
 		object.windowOnTop($element);
@@ -786,6 +808,9 @@ var WINDOWPRESS = function () {
 				is_tablet=($(window).width() > 782 );
 				is_mobile=($(window).width() < 783 );
 			}
+			
+			object.taskbarWidth(); //update taskbar width
+
 			object.taskbarOverflowAgent();
 			object.sidebarCollapseAgent();
 			
@@ -853,12 +878,63 @@ var WINDOWPRESS = function () {
 	$("body").on("click", "a[href!='#']:not("+exceptions+")", function() {  return false;  });
 
 
-
 //TASKBAR BUTTONS
 
-	//taskbar button click
-	$('#windowpress-taskbar').on('click', 'button.taskbar', function() { object.taskbarClick(this); });
+	var taskbar_click_event='click';
+
+	if (is_desktop) {
+		
+		taskbar_click_event='mousedown';
 	
+		var taskbarClickTimeout;
+
+		$('#windowpress-taskbar').on( "sortstart", function( event, ui ) { 
+		
+			clearTimeout(taskbarClickTimeout);
+			var $li=ui.item;
+		
+			if (!$li.hasClass('taskbar_active')) {
+				var button=$li.children('button.taskbar').get(0);
+				object.taskbarClick(button);
+			}
+	
+		} );
+	
+		//scroll between windows
+		$('#windowpress-taskbar').on( 'DOMMouseScroll mousewheel', function ( event ) {
+		
+			var $active_button=$('#windowpress-taskbar').children('li.taskbar_active');
+		
+			var buttonId;
+		
+			if ($active_button.length===0 ) {
+				buttonId=$('#windowpress-taskbar').find('li:last').attr('id');	
+			}
+			else { 
+		
+				if( event.originalEvent.detail > 0 || event.originalEvent.wheelDelta < 0 ) { //scroll down
+				buttonId=$active_button.prev().attr('id');
+				} 
+				else { //scroll up
+					buttonId=$active_button.next().attr('id');
+				}
+	
+			}
+			
+			if (typeof buttonId !== 'undefined') {
+				var elementId=buttonId.slice(0, - 1);		
+				object.windowOnTop($('#'+elementId));
+			}
+		});
+	
+	}
+
+	
+	$('#windowpress-taskbar').on(taskbar_click_event, 'button.taskbar', function() { 
+		var button=this;
+		taskbarClickTimeout=setTimeout(function() { object.taskbarClick(button); },100);
+	});
+		
 	//close button - mobile menu 
 	$('#windowpress-taskbar').on('click', 'button.close', function() { 
 		var elementId=$(this).parent().attr('id');

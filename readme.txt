@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, wordpress, backend, frontend
 Requires at least: 3.8
 Tested up to: 4.2.2
-Stable tag: 1.0.1
+Stable tag: 1.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -56,21 +56,37 @@ Simply hold a click on a link (or touch a link if it's a touch device) until a n
 
 == Upgrade Notice ==
 
-= 1.0.1 =
-*design: corrected #wpcontent padding-left on admin pages
+= 1.1 =
+new feature: sortable taskbar buttons
 
-*performance: removed unneeded content on admin pages
+new feature: switch between windows by scrolling the taskbar
+
+fix: made WindowPress page content unselectable
+
+= 1.0.1 =
+design: corrected #wpcontent padding-left on admin pages
+
+performance: removed unneeded content on admin pages
 
 == Changelog ==
+
+= 1.1 =
+Released: July 08 2015
+
+new feature: sortable taskbar buttons
+
+new feature: switch between windows by scrolling the taskbar
+
+fix: made WindowPress page content unselectable
 
 = 1.0.1 =
 Released: June 30 2015
 
-*design: corrected padding on admin pages
+design: corrected padding on admin pages
 
-*performance: removed unneeded content on admin pages
+performance: removed unneeded content on admin pages
 
 = 1.0 =
 Released: June 29 2015
 
-*Initial release 
+Initial release 

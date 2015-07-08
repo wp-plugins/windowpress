@@ -92,9 +92,8 @@ class WindowPress_Admin_Iframe {
 		$reduced_title=get_admin_page_title();
 		$reduced_title=trim(preg_replace('/[^A-Za-z0-9\- ]/', '', $reduced_title));
 		
-		if (empty($reduced_title))  $reduced_title='undefined';
+		if (!empty($reduced_title))  $this->reduced_title=$reduced_title;
 		
-		$this->reduced_title=$reduced_title;
 		return $title;
 	}
 
@@ -133,6 +132,8 @@ class WindowPress_Admin_Iframe {
 			body { position:absolute; top:0px; left:0; right:0; }
 		</style><?php
 	}
+	
+	private $reduced_title='undefined';
 	
 	private $options;
 	private $dbtab;
