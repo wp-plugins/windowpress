@@ -48,8 +48,8 @@ Simply hold a click on a link (or touch a link if it's a touch device) until a n
 
 == Screenshots ==
 
-1. Frontend page and sliding admin menu
-2. Easily switch between opened windows. You can open as many windows as you want.
+1. Front-end page loaded in wp-admin, along with sliding admin menu.
+2. The taskbar allows you to easily switch between opened windows.
 3. Full width admin pages
 4. WindowPress on a smartphone
 5. You can have a custom background image to display when no windows are opened or all windows are minimized.
