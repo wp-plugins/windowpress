@@ -20,7 +20,7 @@ class WindowPress_Admin_Noiframe {
 		$this->plugin_url=plugins_url().'/'.basename(dirname(dirname(__FILE__))).'/'.basename(dirname(__FILE__));
 			
 		//add WindowPress link to adminbar
-		if ($this->options['add_adminbar_link']) add_action( 'wp_before_admin_bar_render', array($this,'add_adminbar_link') );
+		if ($this->options['add_adminbar_link'] && !is_network_admin()) add_action( 'wp_before_admin_bar_render', array($this,'add_adminbar_link') );
 		
 		//menu icon
 		add_action( 'admin_enqueue_scripts', array($this, 'add_style') );

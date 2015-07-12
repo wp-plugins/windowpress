@@ -1,3 +1,4 @@
+//'use strict';
 /**
 * 
 * Main WindowPress script.
@@ -48,8 +49,11 @@ var WINDOWPRESS = function () {
 	var is_desktop=(!is_touch);
 	var is_tablet=(is_touch && $(window).width() > 782 );
 	var is_mobile=(is_touch && $(window).width() < 783 );
+	
+	var link_click=true;
+	var link_mouseholdTimeout;
 		
-		
+	var resizeTimeout;
 
 
 	this.init = function() {
@@ -113,6 +117,26 @@ var WINDOWPRESS = function () {
 
 //WINDOWS AND TASKBAR
 //********************************************************************************************************************
+
+	this.resizeHandler = function() { //screen resize
+		clearTimeout(resizeTimeout);
+		resizeTimeout=setTimeout(function() {
+			
+			if (is_touch) { //tablet and mobile definitions are based on screen width, so they need to be updated everytime
+				is_tablet=($(window).width() > 782 );
+				is_mobile=($(window).width() < 783 );
+			}
+			
+			object.taskbarWidth(); //update taskbar width
+
+			object.taskbarOverflowAgent();
+			object.sidebarCollapseAgent();
+			
+			//disable sidebar sliding if screen is too small
+			if (is_desktop && $(window).width()<783 && settings["sidebar_slide"]) object.sidebarSlideDisable();
+		},100);
+	}
+
 
 	this.taskbarWidth = function() { //set correct taskbar width - called on init and on  window resize
 		var top_controls_width=buttons_top_width;
@@ -216,15 +240,67 @@ var WINDOWPRESS = function () {
 		return elementId;
 	}
 	
+	this.taskbarScroll = function(event) { 
+		
+		var $active_button=$('#windowpress-taskbar').children('li.taskbar_active');
+		
+		var buttonId;
+		
+		if ($active_button.length===0 ) {
+			buttonId=$('#windowpress-taskbar').find('li:last').attr('id');	
+		}
+		else { 
+		
+			if( event.originalEvent.detail > 0 || event.originalEvent.wheelDelta < 0 ) { //scroll down
+			buttonId=$active_button.prev().attr('id');
+			} 
+			else { //scroll up
+				buttonId=$active_button.next().attr('id');
+			}
+	
+		}
+			
+		if (typeof buttonId !== 'undefined') {
+			var elementId=buttonId.slice(0, - 1);		
+			object.windowOnTop($('#'+elementId));
+		}
+		
+	}
 	
 	
 	
 	
 	
 	
-	
-//WINDOW CREATE, CLOSE
+//WINDOW CREATE, CLOSE, HANDLING LINKS
 //**********************************************************************************************************************
+
+	this.anchorMouseDownHandler = function() {	//for parent and iframes anchors
+		link_click=true;
+		var anchor=this;
+		link_mouseholdTimeout = setTimeout(function() {
+			object.windowInit(anchor.href);
+			link_click=false;
+		},settings["mousehold_duration"]);
+		return false;
+	}
+	
+	this.anchorMouseUpHandler = function() { //for parent anchors only
+		if(link_click) object.windowChangeLocation(this.href);
+		clearTimeout(link_mouseholdTimeout);
+		return false;
+	}
+	
+	//in iframes links must be fired from click event, otherwise anchors that have custom events will behave unexpectedly
+	this.anchorMouseUpHandlerIframe = function() { //for iframe anchors only
+		clearTimeout(link_mouseholdTimeout);
+		return false;
+	}
+	
+	this.anchorClickHandlerIframe = function() { //for iframe anchors only
+		if(link_click) object.windowChangeLocation(this.href);
+		return false;
+	}
 
 	this.isLinkLocal = function(href) {
 		var regExp = new RegExp("//" + location.host + "($|/)");
@@ -290,7 +366,7 @@ var WINDOWPRESS = function () {
 		var tempClass=(url).replace('/^[a-z0-9]+$/i');
 
 		$('#windowpress-windows').children('.windowpress-window').each(function () {
-			$iframe=$(this).find('iframe')
+			var $iframe=$(this).find('iframe')
 
 			if ( ($iframe.get(0).contentWindow.location == link_location) || ($iframe.hasClass(tempClass)) ) {
 				duplicate=1;
@@ -388,7 +464,7 @@ var WINDOWPRESS = function () {
 		// when iframe location happens to be about:blank, iframeReload() calls windowCloseExecute()
 
 		var elementId=$element.attr('id');
-		$iframe=$element.find('iframe');
+		var $iframe=$element.find('iframe');
 		$iframe.contents().off();
 
 		//change iframe location to tell WordPress that user navigates away from this page
@@ -528,11 +604,12 @@ var WINDOWPRESS = function () {
 		$iframe.contents().on('click', 'body', function() { object.iframeContentClickListener(elementId); });
 
 		//anchor click event
-		$iframe.contents().on('click', 'a', function() { 
-			object.windowChangeLocation(this.href,elementId); 
-			return false;
-		});
+		$iframe.contents().on('click', 'a', object.anchorClickHandlerIframe);
+		$iframe.contents().on('mousedown', 'a', object.anchorMouseDownHandler);
+		$iframe.contents().on('mouseup', 'a', object.anchorMouseUpHandlerIframe);
 
+		
+		
 		
 		//disable prev/next buttons if not already
 		$('#'+elementId+' .button_goback').prop('disabled', true);
@@ -592,7 +669,7 @@ var WINDOWPRESS = function () {
 			$element.find('.window_buttons_left').append($view_button);
 			$('#'+elementId+'c').children('.window_buttons_left').prepend($view_button);
 			extra_button=1;
-			$view_butto=null;
+			$view_button=null;
 			link=null;
 		}
 		$adminbar_view=null;
@@ -791,33 +868,9 @@ var WINDOWPRESS = function () {
 //HOOKS
 //***************************************************************************************************************
 	this.registerHooks = function() {
-		
-		
-	var mouseholdTimeout;
-	var resizeTimeout;
-	var sidebar_click=true;
-		
-		
+			
 	//resize event
-	$(window).on('resize', function() {
-		
-		clearTimeout(resizeTimeout);
-		resizeTimeout=setTimeout(function() {
-			
-			if (is_touch) { //tablet and mobile definitions are based on screen width, so they need to be updated everytime
-				is_tablet=($(window).width() > 782 );
-				is_mobile=($(window).width() < 783 );
-			}
-			
-			object.taskbarWidth(); //update taskbar width
-
-			object.taskbarOverflowAgent();
-			object.sidebarCollapseAgent();
-			
-			//disable sidebar sliding if screen is too small
-			if (is_desktop && $(window).width()<783 && settings["sidebar_slide"]) object.sidebarSlideDisable();
-		},100);
-	});
+	$(window).on('resize', object.resizeHandler);
 
 
 	//sidebar sliding
@@ -845,7 +898,7 @@ var WINDOWPRESS = function () {
 	
 
 	//anchors
-	var exceptions='#wp-admin-bar-logout > a, #wp-admin-bar-my-account_exit > a, #windowpress-menu-exit';
+	var exceptions='#wp-admin-bar-logout > a, #wp-admin-bar-my-account_exit > a, #windowpress-menu-exit, #wp-admin-bar-my-sites a';
 	
 	var anchor_selector;
 	if (is_desktop) anchor_selector="a[href!='#']:not("+exceptions+")";	
@@ -857,25 +910,14 @@ var WINDOWPRESS = function () {
 	}
 
 
-	$("body").on('mousedown', anchor_selector, function(e) {
-		
-		var anchor=this;
-		mouseholdTimeout = setTimeout(function() {
-			object.windowInit(anchor.href);
-			sidebar_click=false;
-		},settings["mousehold_duration"]);
-		return false;
-	});
-
-	$("body").on('mouseup', anchor_selector, function(e) {
-				
-		if(sidebar_click) object.windowChangeLocation(this.href);
-		else sidebar_click=true;
-		clearTimeout(mouseholdTimeout);
-		return false;
-	});
+	$("body").on('mousedown', anchor_selector, object.anchorMouseDownHandler);
+	
+	$("body").on('mouseup', anchor_selector, object.anchorMouseUpHandler);
 
 	$("body").on("click", "a[href!='#']:not("+exceptions+")", function() {  return false;  });
+	
+	$("body").on("click", "#wp-admin-bar-my-sites a", function() {  object.openNewTab(this.href); return false;  });
+
 
 
 //TASKBAR BUTTONS
@@ -901,35 +943,10 @@ var WINDOWPRESS = function () {
 		} );
 	
 		//scroll between windows
-		$('#windowpress-taskbar').on( 'DOMMouseScroll mousewheel', function ( event ) {
-		
-			var $active_button=$('#windowpress-taskbar').children('li.taskbar_active');
-		
-			var buttonId;
-		
-			if ($active_button.length===0 ) {
-				buttonId=$('#windowpress-taskbar').find('li:last').attr('id');	
-			}
-			else { 
-		
-				if( event.originalEvent.detail > 0 || event.originalEvent.wheelDelta < 0 ) { //scroll down
-				buttonId=$active_button.prev().attr('id');
-				} 
-				else { //scroll up
-					buttonId=$active_button.next().attr('id');
-				}
-	
-			}
-			
-			if (typeof buttonId !== 'undefined') {
-				var elementId=buttonId.slice(0, - 1);		
-				object.windowOnTop($('#'+elementId));
-			}
-		});
+		$('#windowpress-taskbar').on( 'DOMMouseScroll mousewheel', object.taskbarScroll);
 	
 	}
 
-	
 	$('#windowpress-taskbar').on(taskbar_click_event, 'button.taskbar', function() { 
 		var button=this;
 		taskbarClickTimeout=setTimeout(function() { object.taskbarClick(button); },100);
@@ -979,7 +996,7 @@ var WINDOWPRESS = function () {
 
 
 
-WindowPress = new WINDOWPRESS();
+var WindowPress = new WINDOWPRESS();
 
 WindowPress.init();
 
