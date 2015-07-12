@@ -42,7 +42,7 @@ class WindowPress_Admin_Iframe {
 		add_action( 'admin_enqueue_scripts', array($this,'dequeue_unused_scripts') );
 		//remove unused menu contents
 		add_action( 'wp_before_admin_bar_render', array($this,'remove_adminbar_menus') ); 
-		add_action( 'admin_menu', array($this,'remove_adminmenu_menus') ); 
+	//	add_action( 'admin_menu', array($this,'remove_adminmenu_menus') ); 
 
 
     }

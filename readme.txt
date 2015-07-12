@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, wordpress, backend, frontend
 Requires at least: 3.8
 Tested up to: 4.2.2
-Stable tag: 1.1
+Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -45,6 +45,10 @@ Make sure you always have the latest version of WindowPress before updating Word
 
 Simply hold a click on a link (or touch a link if it's a touch device) until a new window opens. The duration of this event can be changed in the settings (Long Press Duration).
 
+= Does WindowPress work on multisite? =
+
+Yes, however WindowPress currently can only handle one website admin at a time. So as a network administrator, you will have to open WindowPress for each website you want to manage. Also keep in mind that WindowPress doesn't run on network admin.
+
 
 == Screenshots ==
 
@@ -55,6 +59,25 @@ Simply hold a click on a link (or touch a link if it's a touch device) until a n
 5. You can have a custom background image to display when no windows are opened or all windows are minimized.
 
 == Upgrade Notice ==
+
+= 1.2 =
+new features: 
+
+- set custom text to display instead of site title
+
+- open new windows from non-panel links (by click holding)
+
+multisite support:
+
+- support for network wide activation
+
+- links under menu my-sites will open in a new tab
+
+under the hood: 
+
+- javascript compatibility with strict mode
+
+- wrapped the plugin in plugins_loaded hook
 
 = 1.1 =
 new feature: sortable taskbar buttons
@@ -69,6 +92,27 @@ design: corrected #wpcontent padding-left on admin pages
 performance: removed unneeded content on admin pages
 
 == Changelog ==
+
+= 1.2 =
+Released: July 12 2015
+
+new features: 
+
+- set custom text to display instead of the site title
+
+- open new windows from non-panel links (by click holding)
+
+multisite support:
+
+- support for network wide activation
+
+- links under menu my-sites will open in a new tab
+
+under the hood: 
+
+- javascript compatibility with strict mode
+
+- wrapped the plugin in plugins_loaded hook
 
 = 1.1 =
 Released: July 08 2015

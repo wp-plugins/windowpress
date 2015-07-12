@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* Registers activation hook, adds WindowPress menu pages and settings
+* adds WindowPress menu pages and settings
 * Runs on every admin page, except windowpress
 * 
 * @package WindowPress
@@ -16,34 +16,21 @@ class WindowPress_Settings {
 	public function __construct() {
 
 		$this->plugin_url=plugins_url().'/'.basename(dirname(dirname(__FILE__))).'/'.basename(dirname(__FILE__));
+		$this->plugin_path=dirname(__FILE__);
+
 		$this->options=get_option($this->option_name);
-	
-	
+		$this->info=get_option($this->info_name);
+
 		#default settings
-		$this->default_settings=array(
-			'version_number' => WINDOWPRESS_VER,
-			'login_redirect' => 0,
-			'add_adminbar_link' => 1,
-			'wallpaper' => $this->plugin_url.'/includes/assets/wallpapers/Waterchain_by_Poje_Mario.jpg',
-			'homepage' => 0,
-			'homepage_url' => '/wp-admin',
-			'sidebar_slide_start' => 1,
-			'sidebar_slide_duration' => 200,
-			'mousehold_duration' => 500,
-			'taskbar_button_width' => 150,
-			'window_title_width' => 200
-		);
-	
-		#install hook
-		if (!$this->options) register_activation_hook( 'windowpress/index.php', array($this,'install'));
+		require($this->plugin_path.'/includes/php/default_settings.php');
 		
-		#update actions
-		if (isset($this->options['version_number']) && WINDOWPRESS_VER!=$this->options['version_number']) {
-			$this->options['version_number']=WINDOWPRESS_VER;
-			update_option($this->option_name, $this->options);
+		#update
+		if ($this->options) { //plugin must be already installed
+			if (!isset($this->info['version'])) $this->info['version']=1.1; //version tracking started with v1.2
+			if ( WINDOWPRESS_VER!==$this->info['version'] )
+				require(dirname(__FILE__).'/update.php'); 
 		}
-		
-		
+			
 		//pages and settings
 		add_action( 'admin_init', array( $this, 'add_settings_fields' ) );
 		add_action( 'admin_menu', array( $this, 'add_pages' ) );
@@ -54,12 +41,6 @@ class WindowPress_Settings {
 		}
 
     }
-    
-    public function install() {
-		update_option($this->option_name, $this->default_settings);
-	}
-
-
     
     
     public function empty_func() { }
@@ -106,7 +87,7 @@ class WindowPress_Settings {
 				</div>
 
 				<div class="about-section">
-					<p>You can easily help WindowPress grow by sharing it with your friends.</p>
+					<p>You can easily help WindowPress grow by telling about it your friends.</p>
 					<?php
 					echo "<a id='windowpress-fbshare' class='social-icon' href='http://www.facebook.com/sharer.php?u=$windowpress_url' title='Share on Facebook'><img src='".$this->plugin_url."/includes/assets/social-icons/facebook.png' /></a>";
 					echo "<a id='windowpress-plus1' class='social-icon' href='https://plus.google.com/share?url=$windowpress_url' title='Recommend on Google+'><img src='".$this->plugin_url."/includes/assets/social-icons/google-plus.png' /></a>";
@@ -128,8 +109,8 @@ class WindowPress_Settings {
 				</div>
 			
 				<div class="about-section">
-				<p>Your feedback is important.</p>
-				<a class="button button-red mobile-button-noborder-left mobile-button-noborder-right" href="https://wordpress.org/support/view/plugin-reviews/wndowpress?rate=5#postform" target="_blank">Review</a>
+				<p>Think WindowPress is awesome? Please consider leaving a 5-star review.</p>
+				<a class="button button-red mobile-button-noborder-left mobile-button-noborder-right" href="https://wordpress.org/support/view/plugin-reviews/windowpress?rate=5#postform" target="_blank">Review</a>
 				</div>
 			
 				<div class="about-section">
@@ -185,6 +166,11 @@ class WindowPress_Settings {
 		add_settings_field('homepage_url',__('Homepage URL',$this->text_domain),array( $this, 'internal_url_callback' ),$this->settings_page_id,$this->section_general,
 		array('homepage_url',''));
 
+		add_settings_field('custom_site_title',__('Custom site title',$this->text_domain),array( $this, 'check_callback' ),$this->settings_page_id,$this->section_general,
+		array('custom_site_title',''));
+		
+		add_settings_field('custom_site_title_text',__('',$this->text_domain),array( $this, 'text_callback' ),$this->settings_page_id,$this->section_general,
+		array('custom_site_title_text',__('Display custom text instead of the site title in WindowPress site menu. Useful if your website has a long title, limiting the taskbar width. Leave empty to display just the home icon.',$this->text_domain),''));
 
 		#interface settings
 		add_settings_section($this->section_interface,__('Interface Settings',$this->text_domain), array($this,'empty_func') ,$this->settings_page_id);
@@ -300,7 +286,8 @@ class WindowPress_Settings {
 			'login_redirect'=>'', 
 			'add_adminbar_link'=>'', 
 			'homepage'=>'', 
-			'sidebar_slide_start'=>''
+			'sidebar_slide_start'=>'',
+			'custom_site_title' => ''
 		);
 		foreach ($check_inputs as $field=>$name) {
 			if (isset($input[$field]) && intval($input[$field])===1) $new_input[$field]=intval($input[$field]);
@@ -327,20 +314,38 @@ class WindowPress_Settings {
 			}
 		}}
 		
+		//text inputs
+		$text_inputs=array(
+			'custom_site_title_text'=>__('Custom site title',$this->text_domain), 
+		);
+		foreach ($text_inputs as $field=>$name) { if (isset($input[$field])) {
+
+			$new_input[$field]=sanitize_text_field($input[$field]);
+						
+		} }
 		
 		return $new_input;
 	} //endof sanitize_input
 
 
 	private $default_settings;
+	private $default_info;
+
 
 	private $options;
+	private $info;
+	
+	private $option_name='windowpress';
+	private $info_name='windowpress-info';
+	
+	
 	private $plugin_url;
 
 
 
 	private $text_domain='windowpress';
-	private $option_name='windowpress';
+
+
 	
 	private $option_group='windowpress_settings';
 	private $section_general='windowpress_settings_general';
@@ -351,4 +356,4 @@ class WindowPress_Settings {
 
 }
 
-$windowpress_settings= new WindowPress_settings();
+$windowpress_settings= new WindowPress_Settings();

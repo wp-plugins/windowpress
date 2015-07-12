@@ -169,11 +169,13 @@ class WindowPress {
 
 		global $wp_admin_bar;
 		
-		//edit site-name - change site name to "Site", to save space for the taskbar
-		$site_name=$wp_admin_bar->get_node('site-name');
-		$site_name->title=_x('Site','As in: WWW site',$this->text_domain);
-		$wp_admin_bar->remove_menu('site-name');
-		//$wp_admin_bar->add_menu($site_name); it will be added later
+		//set a custom site-name, if enabled
+		if ($this->options['custom_site_title']) {
+			$site_name=$wp_admin_bar->get_node('site-name');
+			$site_name->title=$this->options['custom_site_title_text'];
+			$wp_admin_bar->remove_menu('site-name');
+			//$wp_admin_bar->add_menu($site_name); it will be added later
+		}
 		
 		//add edit-profile to site-name
 		$edit_profile=$wp_admin_bar->get_node('edit-profile');
@@ -199,22 +201,30 @@ class WindowPress {
 		
 		
 		
-		//menus need to be reordered, because site-name was edited
+		//re-order menus, if site menu was edited
+		if ($this->options['custom_site_title']) {
 		
-		$menu_toggle=$wp_admin_bar->get_node('menu-toggle');
-		$wp_admin_bar->remove_menu('menu-toggle');
-		$menus=$wp_admin_bar->get_nodes();
-		
-		//site-name, menu-toggle dont exist at this point
-		
-		//remove remaining menus
-		foreach ($menus as $menu) { $wp_admin_bar->remove_menu($menu->id); } 
-		
-		$wp_admin_bar->add_menu($menu_toggle);
-		$wp_admin_bar->add_menu($site_name);
+			$menu_toggle=$wp_admin_bar->get_node('menu-toggle');
+			$wp_admin_bar->remove_menu('menu-toggle');
+			$my_sites=$wp_admin_bar->get_node('my-sites');
+			$wp_admin_bar->remove_menu('my-sites');
 
-		//add the rest
-		foreach ($menus as $menu) { $wp_admin_bar->add_menu($menu); }
+			$menus=$wp_admin_bar->get_nodes();
+		
+			//site-name, menu-toggle, my sites dont exist at this point
+		
+			//remove remaining menus
+			foreach ($menus as $menu) { $wp_admin_bar->remove_menu($menu->id); } 
+			
+			$wp_admin_bar->add_menu($my_sites);
+			$wp_admin_bar->add_menu($menu_toggle);
+			$wp_admin_bar->add_menu($site_name);
+			
+
+			//add the rest
+			foreach ($menus as $menu) { $wp_admin_bar->add_menu($menu); }
+			
+		}
 		
 
 	}

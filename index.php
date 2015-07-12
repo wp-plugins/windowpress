@@ -3,7 +3,7 @@
  * Plugin Name: WindowPress
  * Plugin URI:  https://wordpress.org/plugins/windowpress
  * Description: Your WordPress in one place.
- * Version: 1.1
+ * Version: 1.2
  * Author: Maciej Krawczyk
  * Author URI: https://profiles.wordpress.org/helium-3
  * License:GPLv2
@@ -29,18 +29,24 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 defined('ABSPATH') or die();
 
 
-define('WINDOWPRESS_VER','1.1');
+define('WINDOWPRESS_VER','1.2');
+
+function WindowPressInit() { 
+	
+	if (current_user_can('administrator')) 	require(dirname(__FILE__).'/current/core.php'); //plugin core
+		
+}
+
+
+//activation hook
+if (is_admin()) require(dirname(__FILE__).'/current/activate.php');
+
 
 //Load the main plugin file if the current user is capable of running the plugin
 
 if (basename($_SERVER["PHP_SELF"])==='wp-login.php') require(dirname(__FILE__).'/current/login.php'); //login functions
 
-elseif (basename($_SERVER["PHP_SELF"])!=='press-this.php') {  //There's no purpose of running Press This! inside WindowPress
-
-	if(!function_exists('wp_set_current_user')) require(ABSPATH . "wp-includes/pluggable.php"); 
-		
-	if (current_user_can('administrator')) require(dirname(__FILE__).'/current/core.php'); //plugin core
-	
-}
+elseif (basename($_SERVER["PHP_SELF"])!=='press-this.php')  //There's no purpose of running Press This! inside WindowPress
+		add_action('plugins_loaded','WindowPressInit');
 		
 ?>
