@@ -94,6 +94,7 @@ performance: removed unneeded content on admin pages
 == Changelog ==
 
 = 1.2 =
+
 Released: July 12 2015
 
 new features: 
