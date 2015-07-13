@@ -1,7 +1,7 @@
 === Plugin Name ===
 Contributors: helium-3
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YVXX65YFACBFE
-Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, wordpress, backend, frontend
+Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, Post, posts, wordpress, backend, frontend
 Requires at least: 3.8
 Tested up to: 4.2.2
 Stable tag: 1.2
