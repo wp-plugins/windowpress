@@ -47,7 +47,7 @@ Simply hold a click on a link (or touch a link if it's a touch device) until a n
 
 = Does WindowPress work on multisite? =
 
-Yes, however WindowPress currently can only handle one website admin at a time. So as a network administrator, you will have to open WindowPress for each website you want to manage. Also keep in mind that WindowPress doesn't run on network admin.
+Yes, however WindowPress currently can only handle one website admin at a time. So as a network administrator, you will have to open WindowPress for each website you want to manage (by accessing their admin areas and clicking on WindowPress). Also keep in mind that WindowPress doesn't run on multisite Network Admin.
 
 
 == Screenshots ==
