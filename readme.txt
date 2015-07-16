@@ -1,4 +1,4 @@
-=== Plugin Name ===
+===WindowPress - The wp-admin Desktop===
 Contributors: helium-3
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YVXX65YFACBFE
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, Post, posts, wordpress, backend, frontend
@@ -8,10 +8,9 @@ Stable tag: 1.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Multitasking made easy. WindowPress turns your wp-admin into a desktop-like environment.
+The ultimate plugin for making website management faster and more efficient.
 
 == Description ==
-
 Are your tired of switching back and forth between frontend and backend of your website? Or maybe you sometimes end up with too many browser tabs opened. If you are looking for a plugin to speed up your website management tasks and improve your efficiency, you've come to the right place.
 
 [youtube https://www.youtube.com/watch?v=RyluYf_MnIY]
