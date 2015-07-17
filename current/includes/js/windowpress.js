@@ -1,4 +1,3 @@
-//'use strict';
 /**
 * 
 * Main WindowPress script.
@@ -6,6 +5,8 @@
 * @package WindowPress
 * @author Maciej Krawczyk
 */
+
+var WindowPress;
 
 jQuery(document).ready(function($){
 
@@ -996,7 +997,7 @@ var WINDOWPRESS = function () {
 
 
 
-var WindowPress = new WINDOWPRESS();
+WindowPress = new WINDOWPRESS();
 
 WindowPress.init();
 

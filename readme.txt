@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, Post, posts, wordpress, backend, frontend
 Requires at least: 3.8
 Tested up to: 4.2.2
-Stable tag: 1.2
+Stable tag: 1.2.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,9 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 
 == Upgrade Notice ==
 
+= 1.2.1 = 
+Bug fix for: unable to change theme in the customizer (since v1.2)
+
 = 1.2 =
 new features: 
 
@@ -91,6 +94,9 @@ design: corrected #wpcontent padding-left on admin pages
 performance: removed unneeded content on admin pages
 
 == Changelog ==
+
+= 1.2.1 = 
+Bug fix for: unable to change theme in the customizer (since v1.2)
 
 = 1.2 =
 
