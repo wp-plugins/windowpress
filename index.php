@@ -3,7 +3,7 @@
  * Plugin Name: WindowPress
  * Plugin URI:  https://wordpress.org/plugins/windowpress
  * Description: Your WordPress in one place.
- * Version: 1.2
+ * Version: 1.2.1
  * Author: Maciej Krawczyk
  * Author URI: https://profiles.wordpress.org/helium-3
  * License:GPLv2
