@@ -11,7 +11,7 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 The ultimate plugin for making website management faster and more efficient.
 
 == Description ==
-Are your tired of switching back and forth between frontend and backend of your website? Or maybe you sometimes end up with too many browser tabs opened. If you are looking for a plugin to speed up your website management tasks and improve your efficiency, you've come to the right place.
+Are your tired of switching back and forth between frontend and backend of your website? Or maybe you sometimes end up with too many browser tabs opened. If you are looking for a plugin to speed up your website management tasks and improve your efficiency, you are in the right place.
 
 [youtube https://www.youtube.com/watch?v=RyluYf_MnIY]
 
