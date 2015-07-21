@@ -57,42 +57,7 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 4. WindowPress on a smartphone
 5. You can have a custom background image to display when no windows are opened or all windows are minimized.
 
-== Upgrade Notice ==
-
-= 1.2.1 = 
-Bug fix for: unable to change theme in the customizer (since v1.2)
-
-= 1.2 =
-new features: 
-
-- set custom text to display instead of site title
-
-- open new windows from non-panel links (by click holding)
-
-multisite support:
-
-- support for network wide activation
-
-- links under menu my-sites will open in a new tab
-
-under the hood: 
-
-- javascript compatibility with strict mode
-
-- wrapped the plugin in plugins_loaded hook
-
-= 1.1 =
-new feature: sortable taskbar buttons
-
-new feature: switch between windows by scrolling the taskbar
-
-fix: made WindowPress page content unselectable
-
-= 1.0.1 =
-design: corrected #wpcontent padding-left on admin pages
-
-performance: removed unneeded content on admin pages
-
+ 
 == Changelog ==
 
 = 1.2.1 = 
