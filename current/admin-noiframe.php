@@ -66,7 +66,7 @@ class WindowPress_Admin_Noiframe {
 
 	public function add_style() { 
 		
-		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css' ); 
+		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css', false, WINDOWPRESS_VER ); 
 		
 		
 	}

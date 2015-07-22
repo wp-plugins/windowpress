@@ -15,6 +15,11 @@ var WINDOWPRESS_EDITOR_FIX = function () {
 		$('#content_ifr').contents().on('click',function() { parent.WindowPress.iframeContentClickListener(iframe_id); });
 	},500);
 	
+	$(window).on('unload', function() {
+		$('#content_ifr').contents().off();
+		$(window).off();
+	});
+	
 	var is_desktop=(!(('ontouchstart' in window) || (navigator.MaxTouchPoints > 0) || (navigator.msMaxTouchPoints > 0)));
 
 	/*editor toolbar has incorrect position when scrolling down the page due to removal of wpadminbar

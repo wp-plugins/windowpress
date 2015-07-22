@@ -276,33 +276,43 @@ var WINDOWPRESS = function () {
 //WINDOW CREATE, CLOSE, HANDLING LINKS
 //**********************************************************************************************************************
 
-	this.anchorMouseDownHandler = function() {	//for parent and iframes anchors
-		link_click=true;
-		var anchor=this;
-		link_mouseholdTimeout = setTimeout(function() {
-			object.windowInit(anchor.href);
-			link_click=false;
-		},settings["mousehold_duration"]);
-		return false;
+	this.anchorMouseDownHandler = function(e) {	//for parent and iframes anchors
+		if (e.which===1 || is_touch) {
+			link_click=true;
+			var anchor=this;
+			link_mouseholdTimeout = setTimeout(function() {
+				object.windowInit(anchor.href);
+				link_click=false;
+			},settings["mousehold_duration"]);
+		
+			return false;
+		}
 	}
 	
-	this.anchorMouseUpHandler = function() { //for parent anchors only
-		if(link_click) object.windowChangeLocation(this.href);
-		clearTimeout(link_mouseholdTimeout);
-		return false;
+	this.anchorMouseUpHandler = function(e) { //for parent anchors only
+		if (e.which===1 || is_touch) {
+			if(link_click) object.windowChangeLocation(this.href);
+			clearTimeout(link_mouseholdTimeout);
+			return false;
+		}
 	}
 	
 	//in iframes links must be fired from click event, otherwise anchors that have custom events will behave unexpectedly
-	this.anchorMouseUpHandlerIframe = function() { //for iframe anchors only
-		clearTimeout(link_mouseholdTimeout);
-		return false;
+	
+	this.anchorMouseUpHandlerIframe = function(e) { //for iframe anchors only
+		if (e.which===1 || is_touch) {
+			clearTimeout(link_mouseholdTimeout);
+			return false;
+		}
 	}
 	
-	this.anchorClickHandlerIframe = function() { //for iframe anchors only
-		if(link_click) object.windowChangeLocation(this.href);
-		return false;
+	this.anchorClickHandlerIframe = function(e) { //for iframe anchors only
+		if (e.which===1 || is_touch) {
+			if(link_click) object.windowChangeLocation(this.href);
+			return false;
+		}
 	}
-
+	
 	this.isLinkLocal = function(href) {
 		var regExp = new RegExp("//" + location.host + "($|/)");
 		var isLocal = (href.substring(0,4) === "http") ? regExp.test(href) : true;
@@ -316,14 +326,17 @@ var WINDOWPRESS = function () {
 	}
 
 
-	this.windowChangeLocation = function(url, elementId) { 
+	this.windowChangeLocation = function(url, elementId, refreshIfDuplicate) { 
 	//runs when clicking an anchor when a window is open and not hidden or on click inside iframe
 	
 	
 		if(typeof elementId === 'undefined') elementId=object.getTopWindow();
+		
+		if(typeof refreshIfDuplicate === 'undefined') refreshIfDuplicate=0;
+
 
 		//create new window, if there's no active window
-		if (elementId===0) { object.windowInit(url); return 0; }
+		if (elementId===0) { object.windowInit(url, refreshIfDuplicate); return 0; }
 		
 		//hide menus
 		if (is_touch) {
@@ -338,6 +351,9 @@ var WINDOWPRESS = function () {
 			object.openNewTab(url);
 			return 0;
 		}
+		
+		//Set loading... title
+		object.windowSetTitle(elementId,locale_text["loading"]);
 
 		//change location of current window
 		 $('#'+elementId).find('iframe').get(0).contentWindow.location=url;
@@ -345,8 +361,10 @@ var WINDOWPRESS = function () {
 	}
 
 
-	this.windowInit = function(url) { //runs when holding on an anchor or clicking an anchor when there are no windows open
+	this.windowInit = function(url, refreshIfDuplicate) { //runs when holding on an anchor or clicking an anchor when there are no windows open
 		
+		if(typeof refreshIfDuplicate === 'undefined') refreshIfDuplicate=0;
+
 		//hide menus
 		if (is_touch) {
 			object.menupopDisable();
@@ -372,6 +390,7 @@ var WINDOWPRESS = function () {
 			if ( ($iframe.get(0).contentWindow.location == link_location) || ($iframe.hasClass(tempClass)) ) {
 				duplicate=1;
 				object.windowOnTop($(this));
+				if (refreshIfDuplicate) WindowPress.windowRefresh($(this).attr('id'));
 				return 0;
 			}
 		});
@@ -433,7 +452,7 @@ var WINDOWPRESS = function () {
 		//create window alement
 		var controls=object.windowGetControls();
 		var element='<div class="'+window_class+'" id="'+elementId+'" style="z-index:0">';
-		element+='<div class="iframe_wrapper"><iframe src="" class="'+tempClass+'" name="windowpress_iframe" iframe_id="windowpress-window'+windowNum+'" title="windowpress-first-open"></frame></div>';
+		element+='<div class="iframe_wrapper"><iframe src="" class="'+tempClass+'" name="windowpress_iframe" iframe_id="windowpress-window'+windowNum+'"></frame></div>';
 		element+='</div>';
 		$('#windowpress-windows').append(element);
 		
@@ -450,9 +469,6 @@ var WINDOWPRESS = function () {
 		$('#windowpress-taskbar').append(taskbarItem);
 
 		object.windowOnTop($element);
-
-		//iframe load hook
-		$element.find('iframe').on('load', function(){ object.iframeReload(elementId); });
 			
 		$element.find('iframe').get(0).contentWindow.location = url;
 
@@ -466,19 +482,28 @@ var WINDOWPRESS = function () {
 
 		var elementId=$element.attr('id');
 		var $iframe=$element.find('iframe');
-		$iframe.contents().off();
 
 		//change iframe location to tell WordPress that user navigates away from this page
 		$iframe.get(0).contentWindow.location.href='about:blank';
+		
+		
+		var timer=setTimeout(function() {
+			if ($iframe.get(0).contentWindow.location.href=='about:blank') object.windowCloseExecute(elementId);
+		},30);
+		
+		//second timer, just in case about:blank fails to load in 30ms
+		var timer2=setTimeout(function() {
+			if ($('#'+elementId).length && $iframe.get(0).contentWindow.location.href=='about:blank') object.windowCloseExecute(elementId);
+		},150);
 	}
 
 
-	this.windowCloseExecute = function($element) {
+	this.windowCloseExecute = function(elementId) {
 		
 		windowCount--;
 		object.taskbarOverflowAgent();
 
-		var elementId=$element.attr('id');
+		var $element=$('#'+elementId);
 		var numericId=parseInt(elementId.replace('windowpress-window',''));
 		var buttonId=elementId+'t';
 		var topId=elementId+'c';
@@ -512,6 +537,9 @@ var WINDOWPRESS = function () {
 		var k=parseInt(iframeHistory[numericId][0]);
 		var newSrc=iframeHistory[numericId][k-1];
 		
+		//Set loading... title
+		object.windowSetTitle(elementId,locale_text["loading"]);
+		
 		var $iframe=$element.find('iframe');
 		$iframe.get(0).contentWindow.location=newSrc;
 	}
@@ -524,12 +552,19 @@ var WINDOWPRESS = function () {
 		var numericId=parseInt(elementId.replace('windowpress-window',''));
 		var k=parseInt(iframeHistory[numericId][0]);
 		var newSrc=iframeHistory[numericId][k+1];
+		
+		//Set loading... title
+		object.windowSetTitle(elementId,locale_text["loading"]);
 
 		var $iframe=$element.find('iframe');
 		$iframe.get(0).contentWindow.location=newSrc;
 	}
 
 	this.windowRefresh = function (elementId) { 	
+		
+		//Set loading... title
+		object.windowSetTitle(elementId,locale_text["loading"]);
+		
 		$('#'+elementId).find('iframe').get(0).contentDocument.location.reload(true);
 	}
 
@@ -549,137 +584,50 @@ var WINDOWPRESS = function () {
 		}
 	}
 	
-	this.iframeBeforeUnload = function(elementId) {
-		
-		//Set loading... title
-		object.windowSetTitle(elementId,locale_text["loading"]);
-		
-	}
-	
-	
-	this.iframeUnload = function(elementId) { 
-		
-		var $iframe=$('#'+elementId).find('iframe');
-		var iframeWindow=$iframe.get(0).contentWindow;
-				
-		$iframe.contents().off();
-		$(iframeWindow).off();
-	}
-	
 
-
-	this.iframeReload = function(elementId) { //handle iframe reload: manage history for going back/foward in an iframe, update taskbar item
+	this.iframeLoad = function(elementId,title,extra_link,extra_link_type) {
+	
+	
+		var $iframe=$('#'+elementId+' iframe');
 		
+		var newSrc=$iframe.get(0).contentWindow.location.href;
 		
-	var $iframe=$('#'+elementId+' iframe');
-	var newSrc=$iframe.get(0).contentWindow.location.href;
-	
-	//close window if requested
-	if (newSrc=='about:blank') { object.windowCloseExecute($('#'+elementId)); return 0; }
-	
-
-	
-	$iframe.ready(function(){ 
-		
-	
-		var iframeWindow=$iframe.get(0).contentWindow;
-
-		$(iframeWindow).on('beforeunload', function(){ object.iframeBeforeUnload(elementId); });
-	
-		//register unload event
-		$(iframeWindow).on('unload', function(){ object.iframeUnload(elementId); });
-	
-	
-		//don't do anything with normal WordPress pages, because they automatically reload themselves as iframe pages
-		if ( $iframe.contents().find('meta[name=windowpress_noiframe]').length ) return 0;
-		
-
 		var $element=$('#'+elementId); //window element
 		var numericId=parseInt(elementId.replace('windowpress-window',''));
 		var history=iframeHistory[numericId];
-		
 
-		$iframe.removeClass(); //remove temporary id class
-
-
-		$iframe.contents().on('click', 'body', function() { object.iframeContentClickListener(elementId); });
-
-		//anchor click event
-		$iframe.contents().on('click', 'a', object.anchorClickHandlerIframe);
-		$iframe.contents().on('mousedown', 'a', object.anchorMouseDownHandler);
-		$iframe.contents().on('mouseup', 'a', object.anchorMouseUpHandlerIframe);
-
-		
-		
-		
-		//disable prev/next buttons if not already
-		$('#'+elementId+' .button_goback').prop('disabled', true);
-		$('#'+elementId+' .button_goforward').prop('disabled', true);
-
-		$('#'+elementId+'c .button_goback').prop('disabled', true);
-		$('#'+elementId+'c .button_goforward').prop('disabled', true);
-
-		
-		
-		//get window title	
-		var title;
-		if ( $iframe.contents().find('meta[name=reduced_title]').length ) title=$iframe.contents().find('meta[name=reduced_title]').attr('content');
-		else if ( $iframe.contents().find('title').length ) title=$iframe.contents().find('title').html();
-		else title='undefined';
 
 		//set window title
 		object.windowSetTitle(elementId,title);
-		$iframe.attr('title',title); //hidden title, currently not used
-
 		
-		title=null;
-
-
+		$iframe.removeClass(); //remove temporary id class
+		
+		//disable prev/next buttons if not already
+		$('#'+elementId+'c .button_goback').prop('disabled', true);
+		$('#'+elementId+'c .button_goforward').prop('disabled', true);
+		
+		
 		//add edit/view button
-
-		var extra_button=0;
-	
-		//edit button
-		$element.find('.button_edit').remove();
-		$('#'+elementId+'c').find('.button_edit').remove();
+		$element.find('.button_extra').remove();
+		$('#'+elementId+'c').find('.button_extra').remove();
 		
-		var $adminbar_edit=$iframe.contents().find('meta[name=edit_link]');
-		
-		if ($adminbar_edit.length > 0 ) {
-			var link=$adminbar_edit.attr('content');
-			var $edit_button='<a href="'+link+'" class="button_edit">'+PHP.svgIcons["edit"]+'</a>';
+		if (extra_link_type!=0) {
+			$('#'+elementId+'c').find('.button_refresh').addClass('button_refresh-autohide');
 			
-			$element.find('.window_buttons_left').append($edit_button);	
-			$('#'+elementId+'c').children('.window_buttons_left').prepend($edit_button);
-			extra_button=1;
-			$edit_button=null;
-			link=null;
+			if(extra_link_type=='view') {
+				var $view_button='<a href="'+extra_link+'" class="button_extra button_view">'+PHP.svgIcons["view"]+'</a>';
+				$('#'+elementId+'c').children('.window_buttons_left').prepend($view_button);
+			}
+			else if (extra_link_type=='edit') {
+				var $edit_button='<a href="'+extra_link+'" class="button_extra button_edit">'+PHP.svgIcons["edit"]+'</a>';
+				$('#'+elementId+'c').children('.window_buttons_left').prepend($edit_button);
+			}
+			
+			
 		}
-		$adminbar_edit=null;
-		
-		//view button
-		$element.find('.button_view').remove();
-		$('#'+elementId+'c').find('.button_view').remove();
-		
-		var $adminbar_view=$iframe.contents().find('#wp-admin-bar-view');
-		if ($adminbar_view.length > 0 ) {
-			
-			var link=$adminbar_view.find('a').attr('href');
-			var $view_button='<a href="'+link+'" class="button_view">'+PHP.svgIcons["view"]+'</a>';
-			
-			$element.find('.window_buttons_left').append($view_button);
-			$('#'+elementId+'c').children('.window_buttons_left').prepend($view_button);
-			extra_button=1;
-			$view_button=null;
-			link=null;
-		}
-		$adminbar_view=null;
-
-		if (extra_button) $('#'+elementId+'c').find('.button_refresh').addClass('button_refresh-autohide');
 		else $('#'+elementId+'c').find('.button_refresh').removeClass('button_refresh-autohide');
-
+		
 		//navigate through history
-
 		if ( history.length > 0 ) {
 
 			var oldKey=parseInt(history[0]);
@@ -699,6 +647,7 @@ var WINDOWPRESS = function () {
 				newKey=oldKey+1;
 				//delete forward history
 				for ( var l=history.length-1; l> newKey; l--) { delete iframeHistory[numericId][l]; }
+				
 			}
 
 			history[0]=newKey;
@@ -728,11 +677,8 @@ var WINDOWPRESS = function () {
 			iframeHistory[numericId][1]=newSrc;	//current location
 		}
 
+	}
 
-	});//endof iframe ready
-
-
-	}//endof function
 	
 	
 	

@@ -20,9 +20,7 @@
 
 	if(is_admin()) { 
 		
-		//if WindowPress is running
-		define('IS_WINDOWPRESS', (isset($_GET['page']) and $_GET['page']=='windowpress' and basename($_SERVER["PHP_SELF"])==='admin.php'));
-
+		
 		if (!IS_WINDOWPRESS) {
 			// activation and settings page
 			require(dirname(__FILE__).'/settings.php'); 

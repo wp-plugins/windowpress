@@ -21,20 +21,24 @@ class WindowPress_Admin_Iframe {
 		
 		
 		#page title for iframes
-		add_filter( 'admin_title', array($this,'get_reduced_title'), 10, 2 );
-		add_action('admin_head',array($this,'output_reduced_title') );
-		add_action('customize_controls_print_scripts', array($this,'output_customizer_meta'));
+		if ( $this->file==='customize.php') $this->reduced_title=__('Customizer',$this->text_domain);
+		else add_filter( 'admin_title', array($this,'get_reduced_title'), 10, 2 );
 
 		#iframe check
 		add_action('admin_head',array($this,'iframe_check') );
 		add_action('customize_controls_print_scripts',array($this,'iframe_check') );
+				
+		#iframe javascript
+		add_action('admin_enqueue_scripts',array($this,'iframe_script'));
+		add_action('customize_controls_enqueue_scripts',array($this,'iframe_script'));
 
 		#fixes
 		add_action( 'customize_controls_enqueue_scripts', array($this, 'customizer_fix') );
 		//if WordPress advanced editor
-		if($file==='post.php' || $file==='post-new.php')
-			add_action( 'admin_enqueue_scripts', array($this, 'editor_fix') );
-			
+		if($file==='post.php' || $file==='post-new.php') {
+			if($file==='post.php') add_action('admin_footer', array($this, 'preview_link'));
+			add_action( 'admin_enqueue_scripts', array($this, 'editor_fix') );	
+		}
 			
 		#hide admin menu and adminbar
 		add_action('admin_head',array($this,'hide_admin_menu') );	
@@ -69,23 +73,58 @@ class WindowPress_Admin_Iframe {
 		
 				window.location.href=newUrl;		
 			}
+			
+			var windowpress_reduced_title='<?php echo $this->reduced_title; ?>';
+
 		</script><?php
 
 	}
+	
+	public function iframe_script() {
+		wp_enqueue_script('windowpress-iframe', $this->plugin_url.'/includes/js/iframe.js', array('jquery'), WINDOWPRESS_VER, true );
+	}
 
 	public function customizer_fix() {		
-		wp_enqueue_script( 'windowpress_customizer_fix', $this->plugin_url.'/includes/js/customizer_fix.js', array('jquery'), false, true );
+		wp_enqueue_script( 'windowpress_customizer_fix', $this->plugin_url.'/includes/js/customizer_fix.js', array('jquery'), WINDOWPRESS_VER, true );
 	}
 	
 	public function editor_fix() {		
-		wp_enqueue_script( 'windowpress_editor_fix', $this->plugin_url.'/includes/js/editor_fix.js', array('jquery'), false, true );
+		wp_enqueue_script( 'windowpress_editor_fix', $this->plugin_url.'/includes/js/editor_fix.js', array('jquery'), WINDOWPRESS_VER, true );
 	}
-
-
-	function output_customizer_meta() {
-		?><meta name="reduced_title" content="Customizer" /><meta name="windowpress_iframe" content="true" /><?php
+	
+		public function preview_link() {
+		global $post;
+		$nonce = wp_create_nonce( 'post_preview_' . $post->ID);
+		echo $nonce;
+		$args='preview=true&preview_id='.$post->ID.'&preview_nonce='.$nonce;
+		
+		?><
+		<script>
+		jQuery(document).ready(function($) {
+			
+			//hijack preview from wordpress
+			$('#post-preview').attr('id', 'post-preview-windowpress');
+			
+			var $preview=$('#post-preview-windowpress');
+			
+			var preview_link=$preview.attr('href')+'?<?php echo $args; ?>';
+			
+			$preview.removeAttr('target');
+						
+			$preview.attr('href',preview_link);
+			
+			$('body').on('click', '#post-preview-windowpress',function() { 
+				if (wp.autosave) wp.autosave.server.triggerSave();
+				var timer=setTimeout(function() {
+					parent.WindowPress.windowInit(preview_link, 1);
+				},150);
+				return false;
+			});
+			
+		});
+			
+		</script><?php		
 	}
-
 
 	function get_reduced_title( $title, $sep ) {
 
@@ -95,12 +134,6 @@ class WindowPress_Admin_Iframe {
 		if (!empty($reduced_title))  $this->reduced_title=$reduced_title;
 		
 		return $title;
-	}
-
-	function output_reduced_title() {
-		echo '<meta name="reduced_title" content="'.$this->reduced_title.'" />';
-		echo '<meta name="windowpress_iframe" content="true" />';
-
 	}
 	
 	public function dequeue_unused_scripts() {
@@ -114,13 +147,15 @@ class WindowPress_Admin_Iframe {
 		$menu=array(0=>0);
 	}
 
-	function remove_adminbar_menus() {
-		global $wp_admin_bar;
-		$view=$wp_admin_bar->get_node('view'); //view link is needed, it's imported to the parent window
-		$menus=$wp_admin_bar->get_nodes();
-		foreach ($menus as $menu) { $wp_admin_bar->remove_menu($menu->id); } 
-		$wp_admin_bar->add_node($view);
-	}
+ 	function remove_adminbar_menus() {
+ 		global $wp_admin_bar;
+ 		$view=$wp_admin_bar->get_node('view');
+		$preview=$wp_admin_bar->get_node('preview');
+ 		$menus=$wp_admin_bar->get_nodes();
+ 		foreach ($menus as $menu) { $wp_admin_bar->remove_menu($menu->id); } 
+ 		$wp_admin_bar->add_node($view);
+		$wp_admin_bar->add_node($preview);
+ 	}
 
 	public function hide_admin_menu() {
 		?><style>
@@ -132,6 +167,10 @@ class WindowPress_Admin_Iframe {
 			body { position:absolute; top:0px; left:0; right:0; }
 		</style><?php
 	}
+	
+	
+	private $text_domain='windowpress';
+
 	
 	private $reduced_title='undefined';
 	

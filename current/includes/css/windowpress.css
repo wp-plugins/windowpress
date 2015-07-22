@@ -243,7 +243,9 @@ hide/show - @media screen and (max-width: 782px)
 		cursor:default;
 	}
 
-	#wpadminbar #wp-admin-bar-my-account { float: left; }
+	
+	#wpadminbar li#wp-admin-bar-my-sites { display:none!important; }
+
 	
 	
 }
@@ -258,6 +260,10 @@ hide/show - @media screen and (max-width: 782px)
 
 
 /********************************************************************************************************************************/
+
+/* adminbar plugin menu wrapper */
+#wp-admin-bar-windowpress-menu-wrapper > .ab-item { cursor:default; }
+#wp-admin-bar-windowpress-menu-wrapper .ab-icon:before { content: "\f106"; }
 
 /*menuslide button*/
 #windowpress-menuslide_toggle svg {

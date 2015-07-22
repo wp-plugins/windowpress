@@ -16,17 +16,19 @@ defined('ABSPATH') or die();
 class WindowPress_WP_Iframe {
 
 	public function __construct() {
+		
+		$this->plugin_url=plugins_url().'/'.basename(dirname(dirname(__FILE__))).'/'.basename(dirname(__FILE__));
 
 		show_admin_bar(false);
+		
+		//iframe script
+		add_action('wp_enqueue_scripts',array($this,'iframe_script'));
 		
 		//iframe check
 		add_action('wp_head',array($this,'iframe_check') );
 		
 		//get title
 		add_filter( 'wp_title', array($this,'get_title'), 1, 2 );
-
-		//output meta
-		add_action('wp_head',array($this,'output_meta') );
 		
 		//inner customizer fix		
 		add_action('wp_enqueue_scripts',array($this,'enqueue_jquery'));
@@ -37,6 +39,9 @@ class WindowPress_WP_Iframe {
 	
 	
 	public function iframe_check() {
+		
+		$this->get_reduced_title();
+		$this->get_edit_link();
 			
 		?><script>
 
@@ -59,6 +64,8 @@ class WindowPress_WP_Iframe {
 		
 				window.location.href=newUrl;
 			}
+			var windowpress_reduced_title='<?php echo $this->reduced_title; ?>';
+			var windowpress_edit_link='<?php echo $this->edit_link; ?>';
 		</script><?php
 	}
 	
@@ -67,7 +74,10 @@ class WindowPress_WP_Iframe {
 		wp_enqueue_script('jquery');
 	}
 	
-	
+	public function iframe_script() {
+		wp_enqueue_script('windowpress-iframe', $this->plugin_url.'/includes/js/iframe.js', array('jquery'), WINDOWPRESS_VER, true );
+	}
+
 	public function inner_customizer_fix() {
 		
 		if (empty( $GLOBALS['wp_customize'])) return 0;
@@ -127,17 +137,11 @@ class WindowPress_WP_Iframe {
 		elseif ( is_author() && (!empty($current_object->data) ) ) $this->reduced_title=$current_object->data->user_nicename;
 		elseif ( is_archive() ) $this->reduced_title=$this->title;
 		else $this->reduced_title=$this->title;
+		
+		if (is_preview()) $this->reduced_title=__('Preview: ',$this->text_domain).$this->reduced_title;
 	}
 
-	function output_meta() {
-		$this->get_reduced_title();
-		$this->get_edit_link();
-		echo '<meta name="reduced_title" content="'.$this->reduced_title.'" />';
-		if ($this->edit_link!==0) echo  '<meta name="edit_link" content="'.$this->edit_link.'" />';
-		echo '<meta name="windowpress_iframe" content="true" />';
-	}
-
-
+	private $plugin_url;
 	private $title;
 	private $reduced_title;
 	private $edit_link=0;

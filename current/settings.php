@@ -57,8 +57,8 @@ class WindowPress_Settings {
 
     public function enqueue_settings_scripts() {
 		wp_enqueue_media();
-		wp_enqueue_script('windowpress_settings', $this->plugin_url.'/includes/js/windowpress_settings.js', array('jquery'));
-		wp_enqueue_style( 'windowpress_settings', $this->plugin_url.'/includes/css/windowpress_settings.css' ); 
+		wp_enqueue_script('windowpress_settings', $this->plugin_url.'/includes/js/windowpress_settings.js', array('jquery'),WINDOWPRESS_VER);
+		wp_enqueue_style( 'windowpress_settings', $this->plugin_url.'/includes/css/windowpress_settings.css', false, WINDOWPRESS_VER); 
 
 	}
 	    
@@ -171,6 +171,9 @@ class WindowPress_Settings {
 		
 		add_settings_field('custom_site_title_text',__('',$this->text_domain),array( $this, 'text_callback' ),$this->settings_page_id,$this->section_general,
 		array('custom_site_title_text',__('Display custom text instead of the site title in WindowPress site menu. Useful if your website has a long title, limiting the taskbar width. Leave empty to display just the home icon.',$this->text_domain),''));
+
+		add_settings_field('wrap_menus',__('Wrap plugin menus',$this->text_domain),array( $this, 'check_callback' ),$this->settings_page_id,$this->section_general,
+		array('wrap_menus','Sava space for the taskbar by wrapping plugin menus into a submenu.'));
 
 		#interface settings
 		add_settings_section($this->section_interface,__('Interface Settings',$this->text_domain), array($this,'empty_func') ,$this->settings_page_id);
@@ -287,7 +290,8 @@ class WindowPress_Settings {
 			'add_adminbar_link'=>'', 
 			'homepage'=>'', 
 			'sidebar_slide_start'=>'',
-			'custom_site_title' => ''
+			'custom_site_title'=>'',
+			'wrap_menus'=>''
 		);
 		foreach ($check_inputs as $field=>$name) {
 			if (isset($input[$field]) && intval($input[$field])===1) $new_input[$field]=intval($input[$field]);
