@@ -34,6 +34,8 @@ class WindowPress {
 		#customize adminbar
 		add_action( 'admin_bar_menu', array($this,'windowpress_adminbar'), 999 );
 		add_action( 'wp_before_admin_bar_render', array($this,'adminbar_menu_site') );
+		if ($this->options['wrap_menus']) add_action( 'wp_before_admin_bar_render', array($this,'adminbar_menu_wrapper') );
+
 
 		//menu pages
 		add_action('admin_menu',array($this,'add_pages'));
@@ -61,11 +63,11 @@ class WindowPress {
 	public function include_scripts() {
 		
 		//CSS
-		wp_enqueue_style( 'windowpress', $this->plugin_url.'/includes/css/windowpress.css' ); 
-		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css' );
+		wp_enqueue_style( 'windowpress', $this->plugin_url.'/includes/css/windowpress.css', false, WINDOWPRESS_VER); 
+		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css', false, WINDOWPRESS_VER);
 		
 		//main script
-		wp_enqueue_script( $this->main_script, $this->plugin_url.'/includes/js/windowpress.js', array('jquery','jquery-ui-sortable' ), false, true ); 
+		wp_enqueue_script( $this->main_script, $this->plugin_url.'/includes/js/windowpress.js', array('jquery','jquery-ui-sortable' ), WINDOWPRESS_VER, true ); 
 
 
 
@@ -146,7 +148,8 @@ class WindowPress {
 			
 			#windowpress-menuslide_toggle span { color: $icon_colors[base]; }
 			#windowpress-menuslide_toggle path { fill: $icon_colors[base]; }
-				
+			#windowpress-menuslide_toggle:hover span { color: $icon_colors[focus]; }
+			#windowpress-menuslide_toggle:hover path { fill: $icon_colors[focus]; }
 				
 			@media screen and (max-width:782px) { #windowpress-taskbar { background: $colors[1] !important; } }
 			#windowpress-taskbar button.taskbar { 	border-left-color:$colors[1]; }
@@ -229,6 +232,30 @@ class WindowPress {
 
 	}
 	
+	public function adminbar_menu_wrapper() {
+
+		global $wp_admin_bar;
+		$menus=$wp_admin_bar->get_nodes();
+		$wp_menus=array('menu-toggle', 'site-name', 'my-sites', 'updates', 'comments', 'new-content','top-secondary');
+		$wrapped_count=0;
+		$wrapper = array('id'=> 'windowpress-menu-wrapper','parent' => '', 'title' => '<span class="ab-icon"></span> '.__('Plugins'));
+
+		foreach ($menus as $key=>$menu) { 
+			
+			$wp_admin_bar->remove_menu($menu->id);
+			
+			if ($menu->parent=='' && !in_array($menu->id,$wp_menus)) { 
+				$menu->parent='windowpress-menu-wrapper';
+				$wrapped_count++;
+			}
+			
+			$wp_admin_bar->add_node($menu);			
+			if ($menu->id==='new-content') 	$wp_admin_bar->add_node($wrapper);
+		}
+		
+		if ($wrapped_count===0) $wp_admin_bar->remove_menu('windowpress-menu-wrapper');
+
+	}
 
 	public function add_pages() {
 		//the goal of this function is to create a pseudo windowpress page, so windowpress is not the current submenu

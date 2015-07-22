@@ -19,7 +19,11 @@
 		$this->options['custom_site_title']=$this->default_settings['custom_site_title'];
 		$this->options['custom_site_title_text']=$this->default_settings['custom_site_title_text'];
 	}
-
+	
+	//from v1.2 update action
+	if ($version<=1.2) {
+		$this->options['wrap_menus']=$this->default_settings['wrap_menus'];
+	}
 
 
 	$this->info['version']=WINDOWPRESS_VER;

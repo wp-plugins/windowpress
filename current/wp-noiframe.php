@@ -69,7 +69,7 @@ class WindowPress_WP_Noiframe {
 	
 	
 
-	public function add_style() { wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css' );  }
+	public function add_style() { wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css', false, WINDOWPRESS_VER);  }
 	
 	private $options;
 	private $option_name='windowpress';

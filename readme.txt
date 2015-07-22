@@ -3,8 +3,8 @@ Contributors: helium-3
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YVXX65YFACBFE
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, Post, posts, wordpress, backend, frontend
 Requires at least: 3.8
-Tested up to: 4.2.2
-Stable tag: 1.2.1
+Tested up to: 4.3
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -59,6 +59,21 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 
  
 == Changelog ==
+
+= 1.3 =
+*Release Date - 22th July, 2015*
+
+* Added an option to wrap third-party adminbar menus into one 'Plugins' menu.
+* Fixed a bug where 'Preview Changes' button didn't trigger post autosave, causing to display post preview without the most recent changes applied.
+* Preview button/view changes button on the editor page will automatically open post preview in a new window.
+* Added preview button in the adminbar for drafts.
+* Added a 'Preview: ' suffix to the title of post preview.
+* Middle and right mouse buttons clicks won't open new windows anymore.
+* Prevented adminbar overflow on mobiles in multisite installations.
+* Hover highlight for menu slide button.
+* WordPress 4.3 support confirmed.
+* Major change in javascript structure, accounting for better memory management.
+* Moved IS_WINDOWPRESS constant to the root of the plugin (previously it was defined in plugins_loaded hook).
 
 = 1.2.1 = 
 Bug fix for: unable to change theme in the customizer (since v1.2)
