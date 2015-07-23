@@ -61,7 +61,7 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 == Changelog ==
 
 = 1.3 =
-*Release Date - 22th July, 2015*
+*Release Date - 22nd July, 2015*
 
 * Added an option to wrap third-party adminbar menus into one 'Plugins' menu.
 * Fixed a bug where 'Preview Changes' button didn't trigger post autosave, causing to display post preview without the most recent changes applied.
@@ -75,48 +75,36 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 * Major change in javascript structure, accounting for better memory management.
 * Moved IS_WINDOWPRESS constant to the root of the plugin (previously it was defined in plugins_loaded hook).
 
-= 1.2.1 = 
-Bug fix for: unable to change theme in the customizer (since v1.2)
+= 1.2.1 =
+*Release Date - 17th July, 2015*
+
+* Fixed a bug where theme couldn't be changed in customizer (in version 1.2).
 
 = 1.2 =
+*Release Date - 12th July, 2015*
 
-Released: July 12 2015
-
-new features: 
-
-- set custom text to display instead of the site title
-
-- open new windows from non-panel links (by click holding)
-
-multisite support:
-
-- support for network wide activation
-
-- links under menu my-sites will open in a new tab
-
-under the hood: 
-
-- javascript compatibility with strict mode
-
-- wrapped the plugin in plugins_loaded hook
+* Added an option to set custom text to display instead of the site title in the adminbar.
+* Ability to open new windows from non-panel links (by click holding).
+* Added multisite support.
+* Added support for network wide activation.
+* Links under menu my-sites will open in a new tab.
+* Javascript compatibility with strict mode.
+* Wrapped the plugin in plugins_loaded hook.
 
 = 1.1 =
-Released: July 08 2015
+*Release Date - 8th July, 2015*
 
-new feature: sortable taskbar buttons
-
-new feature: switch between windows by scrolling the taskbar
-
-fix: made WindowPress page content unselectable
+* Made taskbar buttons sortable.
+* Ability to switch between windows by scrolling the taskbar.
+* Made WindowPress page content unselectable.
 
 = 1.0.1 =
-Released: June 30 2015
+*Release Date - 30th June, 2015*
 
-design: corrected padding on admin pages
-
-performance: removed unneeded content on admin pages
+* Corrected padding on admin pages
+* Removed unneeded content on admin pages
 
 = 1.0 =
-Released: June 29 2015
+*Release Date - 29th June, 2015*
 
-Initial release 
+* Initial release 
