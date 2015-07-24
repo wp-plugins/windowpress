@@ -27,10 +27,6 @@ WindowPress doesn't replace WordPress administration area. As you can see in the
 = Mobile support =
 WindowPress works also on mobile devices, however please note that the mobile version may not work properly for you yet, as I only have one device to test it. If you find a bug please let me now in the support forum.
 
-= Notice =
-Make sure you always have the latest version of WindowPress before updating WordPress.
-
-
 == Installation ==
 
 1. Upload `windowpress` to the `/wp-content/plugins/` directory.
