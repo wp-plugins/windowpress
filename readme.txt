@@ -53,7 +53,6 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 4. WindowPress on a smartphone
 5. You can have a custom background image to display when no windows are opened or all windows are minimized.
 
- 
 == Changelog ==
 
 = 1.3 =
@@ -103,4 +102,4 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 = 1.0 =
 *Release Date - 29th June, 2015*
 
-* Initial release 
+* Initial release
