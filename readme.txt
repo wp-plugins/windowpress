@@ -16,7 +16,7 @@ Are your tired of switching back and forth between frontend and backend of your 
 [youtube https://www.youtube.com/watch?v=RyluYf_MnIY]
 
 = What's this plugin all about? =
-The main goal of WindowPress is to keep everything organized and enclose all administration tasks in just one browser tab. This plugin achieves this by turning wp-admin into a desktop-like environment, in which you can open new windows with your website's internal pages. So for example in one browser tab you can view your website, customize it, add new content, manage comments, change settings etc. Clicking an adminbar or adminmenu link changes the location of the active window, which feels just like the normal WordPress administration area, however when you hold a click on a link, you will open it in a new window. Then you can easily switch between opened windows in the adminbar taskbar. 
+The main goal of WindowPress is to keep everything organized and enclose all administration tasks in just one browser tab. This plugin achieves this by turning wp-admin into a desktop-like environment, in which you can open new windows with your website's internal pages. So for example in one browser tab you can view your website, customize it, add new content, manage comments, change settings etc. Clicking an admin bar or admin menu link changes the location of the active window, which feels just like the normal WordPress administration area, however when you hold a click on a link, you will open it in a new window. Then you can easily switch between opened windows in the admin bar taskbar. 
 
 = Admin menu sliding =
 WindowPress adds a new feature to the admin menu (only for WindowPress admin area). You can hide admin menu and make it slide, so the pages in opened windows can be of full width. It can be easily turned on/off just like collapse menu feature.
@@ -31,7 +31,7 @@ WindowPress works also on mobile devices, however please note that the mobile ve
 
 1. Upload `windowpress` to the `/wp-content/plugins/` directory.
 1. Activate the plugin through the 'Plugins' menu in WordPress.
-1. Now you can access WindowPress from admin menu and adminbar.
+1. Now you can access WindowPress from admin menu and admin bar.
 1. You can adjust settings in WindowPress -> Settings .
 
 == Frequently Asked Questions ==
@@ -58,13 +58,13 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 = 1.3 =
 *Release Date - 22nd July, 2015*
 
-* Added an option to wrap third-party adminbar menus into one 'Plugins' menu.
+* Added an option to wrap third-party admin bar menus into one 'Plugins' menu.
 * Fixed a bug where 'Preview Changes' button didn't trigger post autosave, causing to display post preview without the most recent changes applied.
 * Preview button/view changes button on the editor page will automatically open post preview in a new window.
-* Added preview button in the adminbar for drafts.
+* Added preview button in the admin bar for drafts.
 * Added a 'Preview: ' suffix to the title of post preview.
 * Middle and right mouse buttons clicks won't open new windows anymore.
-* Prevented adminbar overflow on mobiles in multisite installations.
+* Prevented admin bar overflow on mobiles in multisite installations.
 * Hover highlight for menu slide button.
 * WordPress 4.3 support confirmed.
 * Major change in javascript structure, accounting for better memory management.
@@ -78,7 +78,7 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 = 1.2 =
 *Release Date - 12th July, 2015*
 
-* Added an option to set custom text to display instead of the site title in the adminbar.
+* Added an option to set custom text to display instead of the site title in the admin bar.
 * Ability to open new windows from non-panel links (by click holding).
 * Added multisite support.
 * Added support for network wide activation.
