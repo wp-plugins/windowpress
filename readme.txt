@@ -51,7 +51,7 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 2. The taskbar allows you to easily switch between opened windows.
 3. Full width admin pages
 4. WindowPress on a smartphone
-5. You can have a custom background image to display when no windows are opened or all windows are minimized.
+5. You can set a custom background image to display when no windows are opened or all windows are minimized.
 
 == Changelog ==
 
