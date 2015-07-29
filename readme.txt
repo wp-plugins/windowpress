@@ -1,4 +1,4 @@
-===WindowPress - The wp-admin Desktop===
+===WindowPress - The WordPress Desktop===
 Contributors: helium-3
 Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=YVXX65YFACBFE
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, Post, posts, wordpress, backend, frontend
