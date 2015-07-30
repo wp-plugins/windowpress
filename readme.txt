@@ -11,21 +11,27 @@ License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Turns your wp-admin into a desktop-like environment with wallpaper and taskbar, allowing you to handle multiple pages in one browser tab.
 
 == Description ==
-Are your tired of switching back and forth between frontend and backend of your website? Or maybe you sometimes end up with too many browser tabs opened. If you are looking for a plugin to speed up your website management tasks and improve your efficiency, you are in the right place.
-
-[youtube https://www.youtube.com/watch?v=RyluYf_MnIY]
 
 = What's this plugin all about? =
-The main goal of WindowPress is to keep everything organized and enclose all administration tasks in just one browser tab. This plugin achieves this by turning wp-admin into a desktop-like environment, in which you can open new windows with your website's internal pages. So for example in one browser tab you can view your website, customize it, add new content, manage comments, change settings etc. Clicking an admin bar or admin menu link changes the location of the active window, which feels just like the normal WordPress administration area, however when you hold a click on a link, you will open it in a new window. Then you can easily switch between opened windows in the admin bar taskbar. 
+WindowPress turns WordPress administration area into a desktop-like environment in which you can open new windows with your website's internal pages. So for example in one browser tab you can view your website, customize it, add new content, manage comments, change settings etc. 
+Clicking any link changes the location of the active window, which feels just like the normal WordPress administration area, however when you click and hold, you will open a new window. Then you can easily switch between opened windows in the taskbar, which is located in admin bar.
 
-= Admin menu sliding =
-WindowPress adds a new feature to the admin menu (only for WindowPress admin area). You can hide admin menu and make it slide, so the pages in opened windows can be of full width. It can be easily turned on/off just like collapse menu feature.
+= Benefits over traditional adminstration area =
+* **Multitasking made easy** - We often need to do more than one thing at the time, imagine Internet browsers without tab feature. WindowPress is for WordPress, what tabs are for Internet browsers. You no longer need to open multiple tabs in your browser to manage your website, now you can have everything organized in one place - WindowPress administration area.
 
-= Flexibility =
-WindowPress doesn't replace WordPress administration area. As you can see in the video, you can easily switch between WindowPress and traditional WordPress backend.
+* **No more switching back and forth between frontend and backend** - there's no more frontend and backend, just WindowPress. You can open any internal page, whether it's your website or an admin page.
+
+* **Frontend admin menu** You have direct access to the admin menu while viewing your front page. 
+
+* **Static admin menu and admin bar** Admin menu and admin bar are always intact - they never reload while you are browsing, only page content changes.
+
+* **Admin menu sliding** WindowPress adds a new feature to the admin menu (only for WindowPress admin area). You can hide admin menu and make it slide, so the pages in opened windows can be of full width. It can be easily turned on/off just like collapse menu feature.
+
+= WindowPress doesn't replace WordPress administration area =
+WindowPress is just a top level admin page. You can access it anytime you want from the admin menu and exit it any time you want. 
 
 = Mobile support =
-WindowPress works also on mobile devices, however please note that the mobile version may not work properly for you yet, as I only have one device to test it. If you find a bug please let me now in the support forum.
+WindowPress also works on mobile devices. On tablets it works just like on desktops, with an exception for admin menu sliding (for obvious reasons). On smartphones it adds a menu to the right side of the screen with active windows (you can view it in the screenshots section). Currently WindowPress may not function properly on your device, but this is going to change in the future.
 
 == Installation ==
 
