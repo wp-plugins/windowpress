@@ -17,7 +17,9 @@ WindowPress turns WordPress administration area into a desktop-like environment 
 Clicking any link changes the location of the active window, which feels just like the normal WordPress administration area, however when you click and hold, you will open a new window. Then you can easily switch between opened windows in the taskbar, which is located in admin bar.
 
 = Benefits over traditional adminstration area =
-* **Multitasking made easy** - We often need to do more than one thing at the time, imagine Internet browsers without tab feature. WindowPress is for WordPress, what tabs are for Internet browsers. You no longer need to open multiple tabs in your browser to manage your website, now you can have everything organized in one place - WindowPress administration area.
+
+
+* **Multitasking** - We often need to do more than one thing at the time, imagine Internet browsers without tab feature. WindowPress is for WordPress, what tabs are for Internet browsers. You no longer need to open multiple tabs in your browser to manage your website, now you can have everything organized in one place - WindowPress administration area.
 
 * **No more switching back and forth between frontend and backend** - there's no more frontend and backend, just WindowPress. You can open any internal page, whether it's your website or an admin page.
 
