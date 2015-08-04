@@ -12,6 +12,10 @@ Turns your wp-admin into a desktop-like environment with wallpaper and taskbar, 
 
 == Description ==
 
+Are your tired of switching back and forth between frontend and backend of your website? Or maybe you sometimes end up with too many browser tabs opened. If you are looking for a plugin to speed up your website managment tasks and improve your efficency, you are in the right place.
+
+[youtube https://www.youtube.com/watch?v=RyluYf_MnIY]
+
 = What's this plugin all about? =
 WindowPress turns WordPress administration area into a desktop-like environment in which you can open new windows with your website's internal pages. So for example in one browser tab you can view your website, customize it, add new content, manage comments, change settings etc. 
 Clicking any link changes the location of the active window, which feels just like the normal WordPress administration area, however when you click and hold, you will open a new window. Then you can easily switch between opened windows in the taskbar, which is located in admin bar.
