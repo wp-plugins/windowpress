@@ -34,6 +34,9 @@ WindowPress is just a top level admin page. You can access it anytime you want f
 = Mobile support =
 WindowPress also works on mobile devices. On tablets it works just like on desktops, with an exception for admin menu sliding (for obvious reasons). On smartphones it adds a menu to the right side of the screen with active windows (you can view it in the screenshots section). Currently WindowPress may not function properly on your device, but this is going to change in the future.
 
+==Notice==
+WindowPress is currently under active development. There's sill a lot to do in terms of better compatibility with WordPress, user experience and performance improvements. If you notice a bug, please report it in the support forums. 
+
 == Installation ==
 
 1. Upload `windowpress` to the `/wp-content/plugins/` directory.
