@@ -9,28 +9,33 @@
 */
 
 
-defined('ABSPATH') or die();
+defined('WINDOWPRESS_VERSION') or die();
 
 
 
-class WindowPress {
+class WindowPress_Page {
 
 	public function __construct() {
 
 		#configuration
 		$this->options=get_option($this->option_name);
+		$this->info=get_option($this->info_name);
 		$this->plugin_url=plugins_url().'/'.basename(dirname(dirname(__FILE__))).'/'.basename(dirname(__FILE__));
 		$this->plugin_path=dirname(__FILE__);
 		$this->wp_admin_url=get_site_url(null,'wp-admin/');
 		
+		#default settings
+		require($this->plugin_path.'/includes/php/default_settings.php');
 		
-		global $current_user ;
-        $user_id = $current_user->ID;
-        		
-		#start windowpress iframe session
-		if (!isset($_SESSION['windowpressiframe'])) $_SESSION['windowpressiframe']=1;
+		#update
+		if ($this->options) { //plugin must be already installed
+			if (!isset($this->info['version'])) $this->info['version']=1.1; //version tracking started with v1.2
+			if ( WINDOWPRESS_VERSION!==$this->info['version'] )
+				require(dirname(__FILE__).'/update.php'); 
+		}
 		
-		
+		$user_id=wp_get_current_user()->ID;
+        			
 		#customize adminbar
 		add_action( 'admin_bar_menu', array($this,'windowpress_adminbar'), 999 );
 		add_action( 'wp_before_admin_bar_render', array($this,'adminbar_menu_site') );
@@ -40,12 +45,15 @@ class WindowPress {
 		//menu pages
 		add_action('admin_menu',array($this,'add_pages'));
 
-	
+	 	//rewrite address bar
+ 		if (get_option('permalink_structure')!='')
+ 			add_action('admin_enqueue_scripts', array($this,'address_bar_rewrite'));
+ 			
 		#prevent loading WindowPress inside iframe
 		add_action('admin_head', array($this,'iframe_check'));
 
 		#javascript, css and html
-		add_action( 'admin_enqueue_scripts', array($this, 'include_scripts') );
+		add_action( 'admin_enqueue_scripts', array($this, 'enqueue_scripts') );
 		add_action('admin_head', array($this,'inline_css'));
 		add_action('admin_footer',array($this,'admin_footer') );
 		
@@ -60,26 +68,28 @@ class WindowPress {
 
 	}
 
-	public function include_scripts() {
+	public function enqueue_scripts() {
 		
 		//CSS
-		wp_enqueue_style( 'windowpress', $this->plugin_url.'/includes/css/windowpress.css', false, WINDOWPRESS_VER); 
-		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css', false, WINDOWPRESS_VER);
+		wp_enqueue_style( 'windowpress', $this->plugin_url.'/includes/css/windowpress.css', false, WINDOWPRESS_VERSION); 
+		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css', false, WINDOWPRESS_VERSION);
 		
 		//main script
-		wp_enqueue_script( $this->main_script, $this->plugin_url.'/includes/js/windowpress.js', array('jquery','jquery-ui-sortable' ), WINDOWPRESS_VER, true ); 
+		wp_enqueue_script( $this->main_script, $this->plugin_url.'/includes/js/windowpress.js', array('jquery','jquery-ui-sortable' ), WINDOWPRESS_VERSION, true ); 
 
 
 
 		//get icons to include as inline svg
-		$icons=array("arrow_left"=>"","arrow_right"=>"","close"=>"","close2"=>"","refresh"=>"","edit"=>"","view"=>"","menu_slide"=>"","menu"=>"");
+		$icons=array("arrow_left"=>"","arrow_right"=>"","close"=>"","close2"=>"","refresh"=>"","edit"=>"","view"=>"","menu_slide_enable"=>"","menu_slide_disable"=>"","menu"=>"");
 
 		foreach ($icons as $key=>&$val) $val=file_get_contents($this->plugin_path.'/includes/assets/icons/'.$key.'.svg');
 		unset($val);
 
-		wp_localize_script( $this->main_script, 'PHP',
+		wp_localize_script( $this->main_script, 'WindowPress_Data',
 		array( 
 			//configuration
+			'admin_url' => admin_url(),
+			'ajax_url' => admin_url('admin-ajax.php'),
 			'plugin_url' => $this->plugin_url,
 			'svgIcons' => $icons,
 			'defaultWindowType' => 'maximized',
@@ -90,29 +100,39 @@ class WindowPress {
 			'homepage' => $this->options['homepage'],
 			'homepage_url'=> get_home_url().$this->options['homepage_url'],
 			'mousehold_duration' => $this->options['mousehold_duration'],
+			'exit_prompt'=> $this->options['exit_prompt'],
 			
 			//locale
 			'text_disable_menuslide' => __('Disable sliding',$this->text_domain),
 			'text_enable_menuslide' => __('Enable sliding', $this->text_domain),
 			'text_menu_settings' => _x('Settings','As in: WindowPress -> Settings',$this->text_domain),
-			'text_loading' => __('Loading...',$this->text_domain)
+			'text_loading' => __('Loading...',$this->text_domain),
+			'text_exit_prompt' => __('There are multiple windows opened.',$this->text_domain)
 		));
 
 
 	}
 
 
-	public function iframe_check() {
-			
-		?><script>
-			if ( top !== self) { //if inside iframe
-				var style = document.createElement("style");
-				style.innerHTML="body { display:none !important; }";
-				document.getElementsByTagName("HEAD")[0].appendChild(style); 
-				window.location.href="about:blank";
-				}
-		</script><?php
-	}
+ 	public function address_bar_rewrite() { 
+ 		?><script>//update address bar
+ 		if (typeof (window.history.replaceState) !== 'undefined') {
+ 			window.history.replaceState(null, 'WindowPress', '../windowpress');
+ 			window.history.replaceState=null; //prevent WordPress from further changing the address bar
+ 		}</script><?php 
+ 	}
+  	
+  	public function iframe_check() { 
+ 		?><script>//prevent loading WindowPress inside WindowPress
+ 		if ( top !== self && window.frameElement.getAttribute("Name")==="windowpress_iframe") {
+  			var style = document.createElement("style");
+  			style.innerHTML="body { display:none !important; }";
+  			document.getElementsByTagName("HEAD")[0].appendChild(style); 
+ 			parent.WindowPress.windowCloseExecute(window.frameElement.getAttribute("iframe_id"));
+ 		}</script><?php 
+  	}
+	
+
 	
 
 	public function inline_css() {
@@ -123,7 +143,7 @@ class WindowPress {
 		$icon_colors= $_wp_admin_css_colors[$scheme]->icon_colors;
 		
 		$wallpaper='';
-		if(!empty($this->options['wallpaper'])) $wallpaper='body { background:url("'.$this->options['wallpaper'].'") !important; }';
+		if(!empty($this->options['wallpaper'])) $wallpaper='#windowpress-desktop { background:url("'.$this->options['wallpaper'].'"); }';
 		
 		//scheme specific tweaks
 		$tsk_btn_bg=$colors[0];
@@ -296,6 +316,7 @@ class WindowPress {
 
 
 	public function admin_footer() {
+		echo '<div id="windowpress-desktop"></div>';
 		echo '<div id="windowpress-windows"></div>';
 	}
 	
@@ -392,6 +413,9 @@ class WindowPress {
 	private $option_name='windowpress';
 	private $text_domain='windowpress';
 	
+	private $info;
+	private $info_name='windowpress-info';
+	
 
 	private $main_script='windowpress_script';
 
@@ -399,8 +423,7 @@ class WindowPress {
 
 }
 
-$windowpress= new WindowPress();
-
+$WindowPress_Page_Instance=new WindowPress_Page();
 
 
 

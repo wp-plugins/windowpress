@@ -9,7 +9,7 @@
 */
 
 
-defined('ABSPATH') or die();
+defined('WINDOWPRESS_VERSION') or die();
 
 class WindowPress_Settings {
 
@@ -27,7 +27,7 @@ class WindowPress_Settings {
 		#update
 		if ($this->options) { //plugin must be already installed
 			if (!isset($this->info['version'])) $this->info['version']=1.1; //version tracking started with v1.2
-			if ( WINDOWPRESS_VER!==$this->info['version'] )
+			if ( WINDOWPRESS_VERSION!==$this->info['version'] )
 				require(dirname(__FILE__).'/update.php'); 
 		}
 			
@@ -57,8 +57,8 @@ class WindowPress_Settings {
 
     public function enqueue_settings_scripts() {
 		wp_enqueue_media();
-		wp_enqueue_script('windowpress_settings', $this->plugin_url.'/includes/js/windowpress_settings.js', array('jquery'),WINDOWPRESS_VER);
-		wp_enqueue_style( 'windowpress_settings', $this->plugin_url.'/includes/css/windowpress_settings.css', false, WINDOWPRESS_VER); 
+		wp_enqueue_script('windowpress_settings', $this->plugin_url.'/includes/js/windowpress_settings.js', array('jquery'),WINDOWPRESS_VERSION);
+		wp_enqueue_style( 'windowpress_settings', $this->plugin_url.'/includes/css/windowpress_settings.css', false, WINDOWPRESS_VERSION); 
 
 	}
 	    
@@ -67,17 +67,12 @@ class WindowPress_Settings {
 		$windowpress_url=urlencode('https://wordpress.org/plugins/windowpress');
 		
 		$twitter_text=urlencode('I enhanced my #WordPress administration area with this awesome #plugin #windowpress');
-
 		
-		echo '<div class="wrap">';
-		echo '<h2>'.__('WindowPress Settings',$this->text_domain).'</h2>';		
-		settings_errors();
-			
 		?>
 			
 		<div id="windowpress-settings-about">
 						
-			<h2>WindowPress v<?php echo WINDOWPRESS_VER; ?></h2>
+			<h2>WindowPress v<?php echo WINDOWPRESS_VERSION; ?></h2>
 			
 			<div class="about-row-1">
 
@@ -123,8 +118,9 @@ class WindowPress_Settings {
 			
 		</div>
 		
-		
-		<div id="windowpress-settings-options">
+		<div id="windowpress-settings-options" class="wrap">
+			<?php echo '<h2>'.__('WindowPress Settings',$this->text_domain).'</h2>';		
+			settings_errors(); ?>
 			
 			<?php echo '<p id="windowpress-settings-iframe-notify" style="display:none;">'.__('Note that WindowPress must be reloaded for changes to take effect.',$this->text_domain).'</p>'; ?>
 
@@ -138,8 +134,6 @@ class WindowPress_Settings {
 		
 		<?php
 				
-		echo '</div>';//wpwrap
-
 	}
     
 
@@ -159,6 +153,9 @@ class WindowPress_Settings {
 
 		add_settings_field('wallpaper',__('Wallpaper',$this->text_domain),array( $this, 'image_callback' ),$this->settings_page_id,$this->section_general,
 		array('wallpaper',__('Enter a URL or upload an image.',$this->text_domain)));
+		
+		add_settings_field('exit_prompt',__('Prompt on exit',$this->text_domain),array( $this, 'check_callback' ),$this->settings_page_id,$this->section_general,
+		array('exit_prompt',__('Prompt before exiting WindowPress if there are multiple windows opened.',$this->text_domain)));
 		
 		add_settings_field('homepage',__('Enable Homepage',$this->text_domain),array( $this, 'check_callback' ),$this->settings_page_id,$this->section_general,
 		array('homepage',__('Load internal URL of your choice automatically on start.',$this->text_domain)));
@@ -291,7 +288,8 @@ class WindowPress_Settings {
 			'homepage'=>'', 
 			'sidebar_slide_start'=>'',
 			'custom_site_title'=>'',
-			'wrap_menus'=>''
+			'wrap_menus'=>'',
+			'exit_prompt'=>''
 		);
 		foreach ($check_inputs as $field=>$name) {
 			if (isset($input[$field]) && intval($input[$field])===1) $new_input[$field]=intval($input[$field]);
@@ -360,4 +358,6 @@ class WindowPress_Settings {
 
 }
 
-$windowpress_settings= new WindowPress_Settings();
+$WindowPress_Settings_Instance= new WindowPress_Settings();
+
+?>

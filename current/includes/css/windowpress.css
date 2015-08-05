@@ -289,17 +289,34 @@ hide/show - @media screen and (max-width: 782px)
 
 /*wordpress tweaks*/
 
+/*hide scrollbar*/
+  
+  
+#wpwrap { overflow-x:hidden !important; }
+#adminmenuwrap { position:absolute !important; }
+  
+#windowpress-desktop { 
+ 	position:fixed;
+ 	top:0;
+ 	left:0;
+ 	bottom:0;
+ 	right:0;
+ 	box-sizing:border-box;
+ 	border:0;
+ 	margin:0;
+ 	padding-top:32px;
+ 	z-index: 999999;
+  }
+@media screen and (max-width:782px) { padding-top:46px; }
+ 
+#wpbody { display:none; }
+
+
 body #wpwrap { background: none !important; }
 
 
 body #wpwrap #wpfooter { display:none; }
 
-body #wpwrap #wpcontent {
-	margin-left:0px;
-	padding-left:0px;
-}
-
-body #wpwrap #wpbody-content { display:none; }
 
 
 body #wpwrap #wpadminbar { z-index: 999999999 !important; }
@@ -320,12 +337,10 @@ body #wpwrap #adminmenuwrap {
 }
 
 body #wpwrap #adminmenuback.windowpress-menu-slide {
-	/*z-index: 99999999; */
 	left:-155px;
 }
 
 body #wpwrap #adminmenuwrap.windowpress-menu-slide {
-	/*z-index: 99999999 !important;*/
 	left:-160px;
 	padding-right:5px;
 }

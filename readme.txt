@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, Post, posts, wordpress, backend, frontend
 Requires at least: 3.8
 Tested up to: 4.3
-Stable tag: 1.3
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -68,6 +68,23 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 5. You can set a custom background image to display when no windows are opened or all windows are minimized.
 
 == Changelog ==
+
+= 1.4 =
+*Release Date - 5th August, 2015*
+
+* WindowPress page url appears like example.com/windowpress if your website has 'pretty urls'.
+* Smoother mousescroll window switching.
+* Middle and right mouse buttons won't trigger click action on taskbar buttons. 
+* Clicking a taskbar button with middle mouse button will close the window.
+* Added an option to prompt the user on exit if there are multiple windows opened.
+* New menu slide button.
+* Removed padding-right from admin menu when sliding is enabled.
+* Desktop is unscrollable and scrollbar will not appear if admin menu reaches overflow.
+* Fixed taskbar overflow bug when a window with an additional view/edit icon is active. (This occured only on Windows operating system).
+* Iframe session won't start automatically without javascript enabled, this is for better handling browsers with disabled javascript.
+* Merged admin-noiframe.php and wp-noiframe.php into one file - noiframe.php
+* Added IS_WINDOWPRESS_IFRAME constant.
+
 
 = 1.3 =
 *Release Date - 22nd July, 2015*
