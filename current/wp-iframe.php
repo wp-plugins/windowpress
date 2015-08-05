@@ -11,7 +11,7 @@
 */
 
 
-defined('ABSPATH') or die();
+defined('WINDOWPRESS_VERSION') or die();
 
 class WindowPress_WP_Iframe {
 
@@ -75,7 +75,7 @@ class WindowPress_WP_Iframe {
 	}
 	
 	public function iframe_script() {
-		wp_enqueue_script('windowpress-iframe', $this->plugin_url.'/includes/js/iframe.js', array('jquery'), WINDOWPRESS_VER, true );
+		wp_enqueue_script('windowpress-iframe', $this->plugin_url.'/includes/js/iframe.js', array('jquery'), WINDOWPRESS_VERSION, true );
 	}
 
 	public function inner_customizer_fix() {
@@ -152,5 +152,5 @@ class WindowPress_WP_Iframe {
 
 }
 
-$windowpress_wp_iframe= new WindowPress_WP_Iframe();
+$WindowPress_WP_Iframe_Instance= new WindowPress_WP_Iframe();
 ?>

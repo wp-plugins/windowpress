@@ -4,7 +4,7 @@ Donate link: https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_i
 Tags: plugin, admin, page, sidebar, administration, dashboard, free, javascript, jquery, menu, mobile, navigation, performance, plugins, Post, posts, wordpress, backend, frontend
 Requires at least: 3.8
 Tested up to: 4.3
-Stable tag: 1.3
+Stable tag: 1.4
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -12,12 +12,15 @@ Turns your wp-admin into a desktop-like environment with wallpaper and taskbar, 
 
 == Description ==
 
+Are your tired of switching back and forth between frontend and backend of your website? Or maybe you sometimes end up with too many browser tabs opened. If you are looking for a plugin to speed up your website managment tasks and improve your efficency, you are in the right place.
+
+[youtube https://www.youtube.com/watch?v=RyluYf_MnIY]
+
 = What's this plugin all about? =
 WindowPress turns WordPress administration area into a desktop-like environment in which you can open new windows with your website's internal pages. So for example in one browser tab you can view your website, customize it, add new content, manage comments, change settings etc. 
 Clicking any link changes the location of the active window, which feels just like the normal WordPress administration area, however when you click and hold, you will open a new window. Then you can easily switch between opened windows in the taskbar, which is located in admin bar.
 
 = Benefits over traditional adminstration area =
-
 
 * **Multitasking** - We often need to do more than one thing at the time, imagine Internet browsers without tab feature. WindowPress is for WordPress, what tabs are for Internet browsers. You no longer need to open multiple tabs in your browser to manage your website, now you can have everything organized in one place - WindowPress administration area.
 
@@ -34,6 +37,9 @@ WindowPress is just a top level admin page. You can access it anytime you want f
 
 = Mobile support =
 WindowPress also works on mobile devices. On tablets it works just like on desktops, with an exception for admin menu sliding (for obvious reasons). On smartphones it adds a menu to the right side of the screen with active windows (you can view it in the screenshots section). Currently WindowPress may not function properly on your device, but this is going to change in the future.
+
+==Notice==
+WindowPress is currently under active development. There's sill a lot to do in terms of better compatibility with WordPress, user experience and performance improvements. If you notice a bug, please report it in the support forums. 
 
 == Installation ==
 
@@ -62,6 +68,23 @@ Yes, however WindowPress currently can only handle one website admin at a time. 
 5. You can set a custom background image to display when no windows are opened or all windows are minimized.
 
 == Changelog ==
+
+= 1.4 =
+*Release Date - 5th August, 2015*
+
+* WindowPress page url appears like example.com/windowpress if your website has 'pretty urls'.
+* Smoother mousescroll window switching.
+* Middle and right mouse buttons won't trigger click action on taskbar buttons. 
+* Clicking a taskbar button with middle mouse button will close the window.
+* Added an option to prompt the user on exit if there are multiple windows opened.
+* New menu slide button.
+* Removed padding-right from admin menu when sliding is enabled.
+* Desktop is unscrollable and scrollbar will not appear if admin menu reaches overflow.
+* Fixed taskbar overflow bug when a window with an additional view/edit icon is active. (This occured only on Windows operating system).
+* Iframe session won't start automatically without javascript enabled, this is for better handling browsers with disabled javascript.
+* Merged admin-noiframe.php and wp-noiframe.php into one file - noiframe.php
+* Added IS_WINDOWPRESS_IFRAME constant.
+
 
 = 1.3 =
 *Release Date - 22nd July, 2015*

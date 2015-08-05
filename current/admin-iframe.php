@@ -9,15 +9,18 @@
 * @author Maciej Krawczyk
 */
 
-defined('ABSPATH') or die();
+defined('WINDOWPRESS_VERSION') or die();
 
 class WindowPress_Admin_Iframe {
 
 	public function __construct() {
 
 		$this->options=get_option($this->option_name);
+		$this->info=get_option($this->info_name);
+
 		$this->plugin_url=plugins_url().'/'.basename(dirname(dirname(__FILE__))).'/'.basename(dirname(__FILE__));
 		$this->file=$file=basename($_SERVER["PHP_SELF"]);
+		
 		
 		
 		#page title for iframes
@@ -47,8 +50,12 @@ class WindowPress_Admin_Iframe {
 		//remove unused menu contents
 		add_action( 'wp_before_admin_bar_render', array($this,'remove_adminbar_menus') ); 
 	//	add_action( 'admin_menu', array($this,'remove_adminmenu_menus') ); 
-
-
+	
+		//ask the user to leave a review after 30 days since installation
+		if ($this->info['review_nag_time']!=0 && $this->info['review_nag_time']<time()) { 
+			add_action('admin_notices', array($this,'review_nag'));
+			add_action('admin_footer', array($this,'review_nag_js'));
+		}
     }
     
 	public function iframe_check() {
@@ -81,15 +88,15 @@ class WindowPress_Admin_Iframe {
 	}
 	
 	public function iframe_script() {
-		wp_enqueue_script('windowpress-iframe', $this->plugin_url.'/includes/js/iframe.js', array('jquery'), WINDOWPRESS_VER, true );
+		wp_enqueue_script('windowpress-iframe', $this->plugin_url.'/includes/js/iframe.js', array('jquery'), WINDOWPRESS_VERSION, true );
 	}
 
 	public function customizer_fix() {		
-		wp_enqueue_script( 'windowpress_customizer_fix', $this->plugin_url.'/includes/js/customizer_fix.js', array('jquery'), WINDOWPRESS_VER, true );
+		wp_enqueue_script( 'windowpress_customizer_fix', $this->plugin_url.'/includes/js/customizer_fix.js', array('jquery'), WINDOWPRESS_VERSION, true );
 	}
 	
 	public function editor_fix() {		
-		wp_enqueue_script( 'windowpress_editor_fix', $this->plugin_url.'/includes/js/editor_fix.js', array('jquery'), WINDOWPRESS_VER, true );
+		wp_enqueue_script( 'windowpress_editor_fix', $this->plugin_url.'/includes/js/editor_fix.js', array('jquery'), WINDOWPRESS_VERSION, true );
 	}
 	
 		public function preview_link() {
@@ -159,15 +166,61 @@ class WindowPress_Admin_Iframe {
 
 	public function hide_admin_menu() {
 		?><style>
-			body #wpwrap #adminmenuback { display: none !important; }
-			body #wpwrap #adminmenuwrap { display:none !important; }
-			body #wpwrap #wpcontent { margin-left:0px; }
-			body #wpwrap #wpadminbar { display:none !important; }
-			body #wpwrap #wpbody { padding-top:0px; }
-			body { position:absolute; top:0px; left:0; right:0; }
+			#adminmenuback { display: none !important; }
+ 			#adminmenuwrap { display:none !important; }
+ 			#wpwrap #wpcontent { margin-left:0px !important; padding-left:20px !important; }
+ 			#wpadminbar { display:none !important; }
+ 			#wpbody { padding-top:0px; }
+  			body { position:absolute; top:0px; left:0; right:0; }
 		</style><?php
 	}
 	
+	function review_nag(){
+		?>
+         <div id="windowpress-review-nag" class="updated">
+         <p class="notice">Hi, I noticed you've been using WindowPress for a while – that’s awesome! Could you please do me a BIG favor and give it a 5-star rating on WordPress.org? Just to help me spread the word and boost my motivation.</p>
+         <p class="signature"><i>~Maciej Krawczyk</i></p>
+         <p class="links">
+			<a id="windowpress-review-now" href="#">Ok, you deserve it</a>&nbsp;&nbsp;&nbsp;
+			<a id="windowpress-review-later" href="#">Maybe later</a>&nbsp;&nbsp;&nbsp;
+			<a id="windowpress-review-done" href="#">I already did</a>
+         </p>
+         </div>
+         <?php
+	}
+	
+	public function review_nag_js() {
+
+		
+		?><
+		<script>
+		jQuery(document).ready(function($) {
+						
+			$('#windowpress-review-now').on('click',function() {
+				$('#windowpress-review-nag .links, #windowpress-review-nag .signature').remove();
+				$('#windowpress-review-nag .notice').html('Thank you!');
+				parent.WindowPress.ajaxEnqueue({"review_nag":1});
+				parent.WindowPress.openNewTab('https://wordpress.org/support/view/plugin-reviews/windowpress?rate=5#postform');
+				return false;
+			});
+			
+			$('#windowpress-review-later').on('click',function() {
+				parent.WindowPress.ajaxEnqueue({"review_nag":1});
+				$('#windowpress-review-nag').remove();
+				return false;
+			});
+			
+			$('#windowpress-review-done').on('click',function() {
+				parent.WindowPress.ajaxEnqueue({"review_nag":0});
+				$('#windowpress-review-nag').remove();
+				return false;
+			});
+			
+			
+		});
+			
+		</script><?php		
+	}
 	
 	private $text_domain='windowpress';
 
@@ -179,9 +232,10 @@ class WindowPress_Admin_Iframe {
 	private $file;
 
 	private $option_name='windowpress';
+	private $info_name='windowpress-info';
+	private $info;
 
 }
 
-$windowpress_admin_iframe=new WindowPress_Admin_Iframe();
-
+$WindowPress_Admin_Iframe_Instance=new WindowPress_Admin_Iframe();
 ?>

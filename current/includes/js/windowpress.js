@@ -16,31 +16,40 @@ var WINDOWPRESS = function () {
 	var windowNum=0; 
 	var windowCount=0;
 	var Z=999999; //initial window z-index
+	
+	//store simplified taskbar structure in an array, for faster window switching
+	var taskbar_cache=[];
 
 	var sidebar_slide_position;
 	
 	
 	var settings={ 
-		"sidebar_slide": parseInt(PHP.sidebar_slide),
-		"sidebar_slide_duration": parseInt(PHP.sidebar_slide_duration),
+		"sidebar_slide": parseInt(WindowPress_Data.sidebar_slide),
+		"sidebar_slide_duration": parseInt(WindowPress_Data.sidebar_slide_duration),
 		"sidebar_collapse": ( $('body').hasClass('folded') || ( $('body').hasClass('auto-fold') && $(window).width()<=960 ) ),
-		"window_title_width": parseInt(PHP.window_title_width),
-		"taskbar_button_width": parseInt(PHP.taskbar_button_width),
-		"homepage": parseInt(PHP.homepage),
-		"homepage_url": PHP.homepage_url,
-		"mousehold_duration": parseInt(PHP.mousehold_duration)
+		"window_title_width": parseInt(WindowPress_Data.window_title_width),
+		"taskbar_button_width": parseInt(WindowPress_Data.taskbar_button_width),
+		"homepage": parseInt(WindowPress_Data.homepage),
+		"homepage_url": WindowPress_Data.homepage_url,
+		"mousehold_duration": parseInt(WindowPress_Data.mousehold_duration),
+		"exit_prompt": parseInt(WindowPress_Data.exit_prompt),
+
 	}
 	
 	var locale_text={
-		"enable_menuslide": PHP.text_enable_menuslide,
-		"disable_menuslide": PHP.text_disable_menuslide,
-		"menu_settings": PHP.text_menu_settings,
-		"loading": PHP.text_loading
+		"enable_menuslide": WindowPress_Data.text_enable_menuslide,
+		"disable_menuslide": WindowPress_Data.text_disable_menuslide,
+		"menu_settings": WindowPress_Data.text_menu_settings,
+		"loading": WindowPress_Data.text_loading,
+		"exit_prompt": WindowPress_Data.text_exit_prompt
 	}
 	
 	var buttons_top_width=5*38; //in px
 	var taskbar_button_width=settings["taskbar_button_width"];
 	var taskbar_width;
+	
+	var anchor_selector;
+ 	var anchor_exceptions;
 
 	
 	var object=this;
@@ -67,7 +76,7 @@ var WINDOWPRESS = function () {
 		if (is_desktop) {
 
 			//add hide/show panel button
-			var slide_button='<li id="windowpress-menuslide_toggle" ><div>'+PHP.svgIcons['menu_slide']+'</div><span class="wp-menu-name">'+locale_text["enable_menuslide"]+'</span></li>';
+			var slide_button='<li id="windowpress-menuslide_toggle" ><div>'+WindowPress_Data.svgIcons['menu_slide_enable']+'</div><span class="wp-menu-name">'+locale_text["enable_menuslide"]+'</span></li>';
 			$('#adminmenu').append(slide_button);
 		
 			if ( settings["sidebar_slide"] && $(window).width()>782 ) object.sidebarSlideEnable();
@@ -81,7 +90,27 @@ var WINDOWPRESS = function () {
 		//windowpress menu fixes
 		$('#toplevel_page_windowpress-settings li.wp-first-item > a').html(locale_text['menu_settings']);
 		$('#toplevel_page_windowpress-settings li:last-child > a').attr({id: "windowpress-menu-exit", href: "index.php"});
-
+		
+		//select anchors that open new windows
+ 		anchor_exceptions='#wp-admin-bar-logout > a, #wp-admin-bar-my-account_exit > a, #windowpress-menu-exit, #wp-admin-bar-my-sites a';
+ 		if (is_desktop) anchor_selector="a[href!='#']:not("+anchor_exceptions+")";	
+ 		else if (is_touch) anchor_selector="a[href!='#']:not(.menupop > a, .wp-has-submenu > a, "+anchor_exceptions+")";
+ 
+ 		//make admin menu links absolute
+ 		var pattern=/^https?:\/\/|^\/\//i;
+ 		$('#adminmenu a').each(function() {
+ 			var href=$(this).attr('href');
+ 			if (!pattern.test(href)) $(this).attr('href',WindowPress_Data.admin_url+href);
+ 		});
+ 		
+ 		//add windowpressiframe to top level links
+ 		$(anchor_selector).each(function() {
+ 			var href=$(this).attr('href');	
+ 			if(href.indexOf('?')==-1) href+='?windowpressiframe=1';
+ 			else href+='&windowpressiframe=1';	
+ 			$(this).attr('href',href);
+ 		});
+ 			
 		//remove return param from customizer links
 		$('#menu-appearance a.hide-if-no-customize').attr('href','customize.php');
 		
@@ -106,13 +135,72 @@ var WINDOWPRESS = function () {
 			object.taskbarWidth();
 		},200);
 	
-		if(settings["homepage"]) object.windowCreateNew(settings["homepage_url"]);
+		
+		if(settings["homepage"]) {
+			var url=settings["homepage_url"];
+			if(url.indexOf('?')==-1) url+='?windowpressiframe=1';
+ 			else url+='&windowpressiframe=1';
+ 			object.windowCreateNew(url);
+ 		}
 
 	}
 
+	this.beforeshutdown = function() {
+  		if (windowCount>1 && settings["exit_prompt"]==1) return locale_text["exit_prompt"];	
+  	}
+  	
+	this.shutdown = function() {
+ 		//close all windows properly during unload
+ 		if (windowCount!==0) {
+ 			$('#windowpress-windows').children('.windowpress-window').each(function () { 
+ 				object.windowCloseExecute($(this).attr('id'));
+ 			});
+ 		}	
+ 	}
+
+//AJAX
+//**********************************************************************************************************************
 
 
 
+	var ajax_wait=0;
+	var ajax_enqueued=0;
+	var ajax_data={}
+	var ajax_period=3000;
+	
+
+	this.ajaxEnqueue = function(data) {
+		//enqueue data
+		ajax_data=$.extend(ajax_data,data);
+		
+		if (ajax_wait===0) { //do request if allowed
+			object.ajaxRequest();
+		}
+		else if (ajax_enqueued==0) { //enqueue new request, if it was not enqueued before
+			ajax_enqueued=1;
+			var ajax_request_timer=setTimeout(object.ajaxRequest,ajax_period);
+		}
+	}
+	
+	
+	
+	this.ajaxRequest = function() {
+		if(ajax_wait===0 && $.isEmptyObject(ajax_data)==false) {
+			ajax_wait=1;
+			ajax_enqueued=0;
+			
+			var post={ 
+				"action": 'windowpress_ajax', 
+				"data" : ajax_data, 
+			};
+
+			$.post(WindowPress_Data.ajax_url, post);
+			
+			ajax_data={}; //empty data object
+			var timer=setTimeout(function() { ajax_wait=0; },ajax_period);
+		}
+		
+	}
 
 
 
@@ -142,7 +230,7 @@ var WINDOWPRESS = function () {
 	this.taskbarWidth = function() { //set correct taskbar width - called on init and on  window resize
 		var top_controls_width=buttons_top_width;
 		if ($(window).width()>1000) top_controls_width+=settings["window_title_width"];
-		taskbar_width=$('#wpadminbar').width()-$('#wp-admin-bar-root-default').width()-top_controls_width;
+		taskbar_width=$('#wpadminbar').width()-$('#wp-admin-bar-root-default').width()-top_controls_width-1; //minus 1, to fix overflow issue on Windows
 		$('#windowpress-taskbar').css("width",taskbar_width+"px");	
 	}
 	
@@ -166,6 +254,7 @@ var WINDOWPRESS = function () {
 	//z-index 0 means that window is minimized
 
 	this.windowActivate = function(elementId) { //make selected window active
+		taskbar_cache[0]=taskbar_cache.indexOf(elementId);
 		$('#windowpress-taskbar').find('li.taskbar_active').removeClass('taskbar_active');
 		$('#'+elementId+'t').addClass('taskbar_active');
 		$('#windowpress-maximized_tops .maximized_top').hide();
@@ -196,7 +285,9 @@ var WINDOWPRESS = function () {
 			$('#'+elementId+'t').addClass('taskbar_active');
 			$('#'+elementId+'c').show();
 			$('#'+elementId).show();
+			taskbar_cache[0]=taskbar_cache.indexOf(elementId);
 		}
+		else taskbar_cache[0]=0; //no window is active
 	}
 
 
@@ -241,32 +332,66 @@ var WINDOWPRESS = function () {
 		return elementId;
 	}
 	
-	this.taskbarScroll = function(event) { 
-		
-		var $active_button=$('#windowpress-taskbar').children('li.taskbar_active');
-		
-		var buttonId;
-		
-		if ($active_button.length===0 ) {
-			buttonId=$('#windowpress-taskbar').find('li:last').attr('id');	
-		}
-		else { 
-		
-			if( event.originalEvent.detail > 0 || event.originalEvent.wheelDelta < 0 ) { //scroll down
-			buttonId=$active_button.prev().attr('id');
-			} 
-			else { //scroll up
-				buttonId=$active_button.next().attr('id');
-			}
-	
-		}
-			
-		if (typeof buttonId !== 'undefined') {
-			var elementId=buttonId.slice(0, - 1);		
-			object.windowOnTop($('#'+elementId));
-		}
-		
-	}
+ 	var taskbarScroll_skip=0;
+ 	
+  
+ 	this.taskbarScroll = function(event) {
+ 		
+ 		var position;
+  		
+ 		if (taskbar_cache[0]===0 ) {
+ 			position=windowCount;
+  		}
+  		else { 
+  			if( event.originalEvent.detail > 0 || event.originalEvent.wheelDelta < 0 ) { //scroll down
+ 				position=taskbar_cache[0]-1;
+  			} 
+  			else { //scroll up
+ 				position=taskbar_cache[0]+1;
+  			}
+  		}
+  		
+ 		if (!(position > 0 && position <= windowCount)) return;
+ 		 			
+ 		if (taskbarScroll_skip==0 ) {
+ 			object.windowOnTop($('#'+taskbar_cache[position]));
+ 			taskbarScroll_skip=1;
+ 			var timer=setTimeout(function() { 
+ 				taskbarScroll_skip=0; 
+ 				object.windowOnTop($('#'+taskbar_cache[taskbar_cache[0]]));
+ 				},60);
+  		}
+ 		else taskbar_cache[0]=position;			
+ 	}
+ 	
+ 	this.taskbarCacheRearrange = function() {
+ 		var active_button_id=taskbar_cache[taskbar_cache[0]];
+ 		var k=1;
+ 		$('#windowpress-taskbar > li').each(function() {
+ 			taskbar_cache[k]=$(this).attr('id').slice(0, - 1);
+ 			k++;
+ 		});
+ 		taskbar_cache[0]=taskbar_cache.indexOf(active_button_id); 		
+ 	}
+
+
+ 	
+ 	//called by windowCreateNew, after windowCount++
+ 	this.taskbarCacheAppend = function(elementId) {
+ 		taskbar_cache[0]=windowCount;
+		taskbar_cache[windowCount]=elementId;
+ 	}
+ 		
+ 	//called by windowCloseExecute, must run before windowCount--
+ 	this.taskbarCacheRemove = function(elementId) {
+ 		var deleted=0;
+ 		for (var k=1; k<=windowCount; k++) {			
+ 			if (deleted) taskbar_cache[k-1]=taskbar_cache[k];
+ 			else if (taskbar_cache[k]===elementId) deleted=1;
+ 		}
+ 		delete taskbar_cache[windowCount];
+ 		//taskbar_cache[0] will be updated by taskbarRefresh()	
+  	}
 	
 	
 	
@@ -420,15 +545,15 @@ var WINDOWPRESS = function () {
 		var element='';
 
 		element+='<div class="window_buttons_right">';
-		element+='<button type="button" class="button_close">'+PHP.svgIcons["close"]+'</button>';
+		element+='<button type="button" class="button_close">'+WindowPress_Data.svgIcons["close"]+'</button>';
 		element+='</div>';
 
 		element+='<div class="window_title" style="width:'+settings["window_title_width"]+'px;">'+locale_text["loading"]+'</div>';
 
 		element+='<div class="window_buttons_left">';
-		element+='<button type="button" class="button_goback" disabled>'+PHP.svgIcons["arrow_left"]+'</button>';
-		element+='<button type="button" class="button_goforward" disabled>'+PHP.svgIcons["arrow_right"]+'</button>';
-		element+='<button type="button" class="button_refresh">'+PHP.svgIcons["refresh"]+'</button>';
+		element+='<button type="button" class="button_goback" disabled>'+WindowPress_Data.svgIcons["arrow_left"]+'</button>';
+		element+='<button type="button" class="button_goforward" disabled>'+WindowPress_Data.svgIcons["arrow_right"]+'</button>';
+		element+='<button type="button" class="button_refresh">'+WindowPress_Data.svgIcons["refresh"]+'</button>';
 		element+='</div>';
 
 		return element;
@@ -465,8 +590,9 @@ var WINDOWPRESS = function () {
 
 		//create new taskbar element
 		var taskbarItemId=elementId+'t';
-		var taskbarItem='<li id="'+taskbarItemId+'" class="taskbar" style="width:'+taskbar_button_width+'px;"><button type="button" class="taskbar ui-sortable-handle">'+locale_text["loading"]+'</button><button class="close">'+PHP.svgIcons["close2"]+'</button></li>';
-		$('#windowpress-taskbar').append(taskbarItem);
+		var taskbarItem='<li id="'+taskbarItemId+'" class="taskbar" style="width:'+taskbar_button_width+'px;"><button type="button" class="taskbar ui-sortable-handle">'+locale_text["loading"]+'</button><button class="close">'+WindowPress_Data.svgIcons["close2"]+'</button></li>';
+		$('#windowpress-taskbar').append(taskbarItem);	
+ 		object.taskbarCacheAppend(elementId);
 
 		object.windowOnTop($element);
 			
@@ -500,6 +626,7 @@ var WINDOWPRESS = function () {
 
 	this.windowCloseExecute = function(elementId) {
 		
+		object.taskbarCacheRemove(elementId);
 		windowCount--;
 		object.taskbarOverflowAgent();
 
@@ -615,11 +742,11 @@ var WINDOWPRESS = function () {
 			$('#'+elementId+'c').find('.button_refresh').addClass('button_refresh-autohide');
 			
 			if(extra_link_type=='view') {
-				var $view_button='<a href="'+extra_link+'" class="button_extra button_view">'+PHP.svgIcons["view"]+'</a>';
+				var $view_button='<a href="'+extra_link+'" class="button_extra button_view">'+WindowPress_Data.svgIcons["view"]+'</a>';
 				$('#'+elementId+'c').children('.window_buttons_left').prepend($view_button);
 			}
 			else if (extra_link_type=='edit') {
-				var $edit_button='<a href="'+extra_link+'" class="button_extra button_edit">'+PHP.svgIcons["edit"]+'</a>';
+				var $edit_button='<a href="'+extra_link+'" class="button_extra button_edit">'+WindowPress_Data.svgIcons["edit"]+'</a>';
 				$('#'+elementId+'c').children('.window_buttons_left').prepend($edit_button);
 			}
 			
@@ -692,7 +819,8 @@ var WINDOWPRESS = function () {
 	
 	this.sidebarSlideEnable = function() {
 		settings["sidebar_slide"]=1;
-		$('#windowpress-menuslide_toggle span').get(0).innerHTML=locale_text["disable_menuslide"];
+ 		$('#windowpress-menuslide_toggle span').html(locale_text["disable_menuslide"]);
+ 		$('#windowpress-menuslide_toggle > div').html(WindowPress_Data.svgIcons["menu_slide_disable"]);
 		$('#adminmenuwrap').addClass('windowpress-menu-slide');
 		$('#adminmenuback').addClass('windowpress-menu-slide');
 		//remove additional classes if any
@@ -705,15 +833,15 @@ var WINDOWPRESS = function () {
 	this.sidebarSlideDisable = function() {
 		
 		settings["sidebar_slide"]=0;
-		$('#windowpress-menuslide_toggle span').get(0).innerHTML=locale_text["enable_menuslide"];
+		$('#windowpress-menuslide_toggle span').html(locale_text["enable_menuslide"]);
+ 		$('#windowpress-menuslide_toggle > div').html(WindowPress_Data.svgIcons["menu_slide_enable"]);
 		$('#adminmenuwrap').removeClass('windowpress-menu-slide');
 		$('#adminmenuback').removeClass('windowpress-menu-slide');
 		//remove additional classes if any
 		$('.windowpress-window').removeClass().addClass('windowpress-window');
 		//set correct maximized window class
 		$('.windowpress-window').addClass('windowpress-window-'+object.getMaximizedClass());
-		$('#adminmenuwrap').css('left','0px');
-			
+! 		$('#adminmenuwrap').css({left:"0px",paddingRight:"0px"});			
 	}
 	
 	this.sidebarSlideToggle = function() {
@@ -820,12 +948,12 @@ var WINDOWPRESS = function () {
 	$(window).on('resize', object.resizeHandler);
 
 
-	//sidebar sliding
-	if (is_desktop) { //using #wpwrap instead of #adminmenumain to provide backwards compatibility 
-		$('#wpwrap').on('mouseenter', '#adminmenuwrap.windowpress-menu-slide', function() { $('#adminmenuwrap').stop(true, false).animate({left: "0px"},settings["sidebar_slide_duration"]); });
-		$('#wpwrap').on('mouseleave', '#adminmenuwrap.windowpress-menu-slide', function() { $('#adminmenuwrap').stop(true, false).animate({left: sidebar_slide_position},settings["sidebar_slide_duration"]); });
-		$('#adminmenu').on('click','#windowpress-menuslide_toggle', function() { object.sidebarSlideToggle(); });
-	}
+	//sidebar sliding	
+	if (is_desktop) {
+ 		$('#wpwrap').on('mouseenter', '#adminmenuwrap.windowpress-menu-slide', function() { $('#adminmenuwrap').stop(true, false).animate({left: "0px", paddingRight: "0px"},settings["sidebar_slide_duration"]); });
+ 		$('#wpwrap').on('mouseleave', '#adminmenuwrap.windowpress-menu-slide', function() { $('#adminmenuwrap').stop(true, false).animate({left: sidebar_slide_position, paddingRight: "5px"},settings["sidebar_slide_duration"]); });
+  		$('#adminmenu').on('click','#windowpress-menuslide_toggle', function() { object.sidebarSlideToggle(); });
+  	}
 	
 	$('#adminmenu').on('click','#collapse-menu', function() { object.sidebarCollapseToggle(); });
 	
@@ -845,12 +973,6 @@ var WINDOWPRESS = function () {
 	
 
 	//anchors
-	var exceptions='#wp-admin-bar-logout > a, #wp-admin-bar-my-account_exit > a, #windowpress-menu-exit, #wp-admin-bar-my-sites a';
-	
-	var anchor_selector;
-	if (is_desktop) anchor_selector="a[href!='#']:not("+exceptions+")";	
-	else if (is_touch) anchor_selector="a[href!='#']:not(.menupop > a, .wp-has-submenu > a, "+exceptions+")";
-
 
 	if (is_touch) { 
 		$("body").on("contextmenu", anchor_selector, function(e) { return false; });
@@ -861,7 +983,7 @@ var WINDOWPRESS = function () {
 	
 	$("body").on('mouseup', anchor_selector, object.anchorMouseUpHandler);
 
-	$("body").on("click", "a[href!='#']:not("+exceptions+")", function() {  return false;  });
+	$("body").on("click", "a[href!='#']:not("+anchor_exceptions+")", function() {  return false;  });
 	
 	$("body").on("click", "#wp-admin-bar-my-sites a", function() {  object.openNewTab(this.href); return false;  });
 
@@ -870,13 +992,14 @@ var WINDOWPRESS = function () {
 //TASKBAR BUTTONS
 
 	var taskbar_click_event='click';
+	
+	var taskbarClickTimeout;
+
 
 	if (is_desktop) {
 		
 		taskbar_click_event='mousedown';
 	
-		var taskbarClickTimeout;
-
 		$('#windowpress-taskbar').on( "sortstart", function( event, ui ) { 
 		
 			clearTimeout(taskbarClickTimeout);
@@ -888,15 +1011,23 @@ var WINDOWPRESS = function () {
 			}
 	
 		} );
+		$('#windowpress-taskbar').on( "sortstop", function( event, ui ) { object.taskbarCacheRearrange(); });
 	
 		//scroll between windows
 		$('#windowpress-taskbar').on( 'DOMMouseScroll mousewheel', object.taskbarScroll);
 	
 	}
 
-	$('#windowpress-taskbar').on(taskbar_click_event, 'button.taskbar', function() { 
-		var button=this;
-		taskbarClickTimeout=setTimeout(function() { object.taskbarClick(button); },100);
+	$('#windowpress-taskbar').on(taskbar_click_event, 'button.taskbar', function(e) { 
+ 		if (e.which===1 || is_touch) { 	//if lmb or touch
+			var button=this;
+			taskbarClickTimeout=setTimeout(function() { object.taskbarClick(button); },100);
+		}
+		else if (e.which===2) { //if middle mouse button
+ 			var elementId=$(this).parent().attr('id').slice(0, - 1);
+ 			var $element=$('#'+elementId);
+ 			object.windowClose($element);
+ 		}
 	});
 		
 	//close button - mobile menu 
@@ -933,6 +1064,10 @@ var WINDOWPRESS = function () {
 		elementId=elementId.slice(0, - 1);
 		object.windowClose( $('#'+elementId) ); 
 	});
+	
+	$(window).on('beforeunload',object.beforeshutdown);
+	
+ 	$(window).on('unload',object.shutdown);
 
 
 	

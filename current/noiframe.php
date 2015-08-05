@@ -1,7 +1,7 @@
 <?php
 /**
 * 
-* This file loads on admin pages if windowpress iframe session is not set.
+* This file loads on normal frontend and backend pages
 * If page is loaded in WindowPress, it will be reloaded with parameter telling to set the session. 
 * Adds WindowPress adminbar link.
 * 
@@ -9,10 +9,9 @@
 * @author Maciej Krawczyk
 */
 
+defined('WINDOWPRESS_VERSION') or die();
 
-defined('ABSPATH') or die();
-
-class WindowPress_Admin_Noiframe {
+class WindowPress_Noiframe {
 
 	public function __construct() {
 		
@@ -24,22 +23,17 @@ class WindowPress_Admin_Noiframe {
 		
 		//menu icon
 		add_action( 'admin_enqueue_scripts', array($this, 'add_style') );
-
-
+		add_action( 'wp_enqueue_scripts', array($this, 'add_style') );
+		
 		//iframe check
-		add_action('admin_head',array($this,'iframe_check') );	
+		add_action('admin_print_scripts',array($this,'iframe_check') );	
 		add_action('customize_controls_print_scripts',array($this,'iframe_check') );
+		add_action('wp_print_scripts',array($this,'iframe_check') );
 		
 	}
 	
-	
-
 	public function iframe_check() {
-		
-		echo '<meta name="windowpress_noiframe" content="true" />';
-
 		?><script>
-
 		if ( top !== self && window.frameElement.getAttribute("Name")==="windowpress_iframe") { //if inside windowpress iframe
 			
 			//hide body
@@ -60,14 +54,12 @@ class WindowPress_Admin_Noiframe {
 			window.location.href=newUrl;
 		}
 		</script><?php
-	
 	}
 
 
 	public function add_style() { 
 		
-		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css', false, WINDOWPRESS_VER ); 
-		
+		wp_enqueue_style( 'windowpress_menu_icon', $this->plugin_url.'/includes/css/menu_icon.css' ); 
 		
 	}
 	
@@ -78,11 +70,11 @@ class WindowPress_Admin_Noiframe {
 	}
 
 	private $options;
-	private $option_name='windowpress';
+	private $option_name='windowpresspro-settings';
 	private $plugin_url;
 	
 
 }
 
-$windowpress_admin_noiframe= new WindowPress_Admin_Noiframe();
+$WindowPress_Noiframe_Instance= new WindowPress_Noiframe();
 ?>
